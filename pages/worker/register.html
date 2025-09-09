@@ -11,52 +11,98 @@
   <body>
     <div class="container py-3" style="max-width: 640px;">
       <a href="./language-select.html" class="text-decoration-none small">&larr; Back</a>
-      <h1 class="h4 fw-bold mt-2">Registration | নিবন্ধন | पंजीकरण | രജിസ്ട്രേഷൻ</h1>
-      <p class="text-muted small">Please enter your details</p>
+      <h1 id="titleRegister" class="h4 fw-bold mt-2">Registration</h1>
+      <p id="subtitleRegister" class="text-muted small">Please enter your details</p>
 
       <form id="regForm" novalidate class="card border-0 shadow-sm p-3 mobile-card">
         <div class="row g-3">
           <div class="col-12">
-            <label class="form-label">Name (नाम / নাম)</label>
-            <input type="text" class="form-control" name="name" required />
-            <div class="invalid-feedback">Name is required</div>
+            <label id="labelName" class="form-label">Name</label>
+            <input id="inputName" type="text" class="form-control" name="name" required />
+            <div id="errorName" class="invalid-feedback">Name is required</div>
           </div>
           <div class="col-6">
-            <label class="form-label">Age (उम्र)</label>
-            <input type="number" min="1" max="100" class="form-control" name="age" required />
-            <div class="invalid-feedback">Valid age required</div>
+            <label id="labelAge" class="form-label">Age</label>
+            <input id="inputAge" type="number" min="1" max="100" class="form-control" name="age" required />
+            <div id="errorAge" class="invalid-feedback">Valid age required</div>
           </div>
           <div class="col-6">
-            <label class="form-label">Gender (लिंग)</label>
-            <select class="form-select" name="gender" required>
-              <option value="" selected disabled>Choose</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
+            <label id="labelGender" class="form-label">Gender</label>
+            <select id="inputGender" class="form-select" name="gender" required>
+              <option id="optChooseGender" value="" selected disabled>Choose</option>
+              <option id="optMale">Male</option>
+              <option id="optFemale">Female</option>
+              <option id="optOther">Other</option>
             </select>
-            <div class="invalid-feedback">Select gender</div>
+            <div id="errorGender" class="invalid-feedback">Select gender</div>
           </div>
           <div class="col-12">
-            <label class="form-label">Home State (राज्य)</label>
-            <select class="form-select" name="homeState" required>
-              <option value="" selected disabled>Choose</option>
-              <option>West Bengal</option>
-              <option>Odisha</option>
-              <option>Uttar Pradesh</option>
+            <label id="labelBloodGroup" class="form-label">Blood Group</label>
+            <select id="inputBloodGroup" class="form-select" name="bloodGroup" required>
+              <option id="optChooseBlood" value="" selected disabled>Choose</option>
+              <option>A+</option>
+              <option>A-</option>
+              <option>B+</option>
+              <option>B-</option>
+              <option>AB+</option>
+              <option>AB-</option>
+              <option>O+</option>
+              <option>O-</option>
+            </select>
+            <div id="errorBlood" class="invalid-feedback">Select blood group</div>
+          </div>
+          <div class="col-12">
+            <label id="labelHomeState" class="form-label">Home State</label>
+            <select id="inputHomeState" class="form-select" name="homeState" required>
+              <option id="optChooseState" value="" selected disabled>Choose</option>
+              <option>Andhra Pradesh</option>
+              <option>Arunachal Pradesh</option>
+              <option>Assam</option>
               <option>Bihar</option>
+              <option>Chhattisgarh</option>
+              <option>Goa</option>
+              <option>Gujarat</option>
+              <option>Haryana</option>
+              <option>Himachal Pradesh</option>
               <option>Jharkhand</option>
+              <option>Karnataka</option>
+              <option>Kerala</option>
+              <option>Madhya Pradesh</option>
+              <option>Maharashtra</option>
+              <option>Manipur</option>
+              <option>Meghalaya</option>
+              <option>Mizoram</option>
+              <option>Nagaland</option>
+              <option>Odisha</option>
+              <option>Punjab</option>
+              <option>Rajasthan</option>
+              <option>Sikkim</option>
+              <option>Tamil Nadu</option>
+              <option>Telangana</option>
+              <option>Tripura</option>
+              <option>Uttar Pradesh</option>
+              <option>Uttarakhand</option>
+              <option>West Bengal</option>
+              <option>Andaman and Nicobar Islands</option>
+              <option>Chandigarh</option>
+              <option>Dadra and Nagar Haveli and Daman and Diu</option>
+              <option>Delhi</option>
+              <option>Jammu and Kashmir</option>
+              <option>Ladakh</option>
+              <option>Lakshadweep</option>
+              <option>Puducherry</option>
             </select>
-            <div class="invalid-feedback">Select home state</div>
+            <div id="errorHomeState" class="invalid-feedback">Select home state</div>
           </div>
           <div class="col-12">
-            <label class="form-label">Phone (फ़ोन)</label>
-            <input type="tel" class="form-control" name="phone" pattern="[0-9]{10}" placeholder="10-digit number" required />
-            <div class="invalid-feedback">10-digit phone required</div>
+            <label id="labelPhone" class="form-label">Phone</label>
+            <input id="inputPhone" type="tel" class="form-control" name="phone" pattern="[0-9]{10}" placeholder="10-digit number" required />
+            <div id="errorPhone" class="invalid-feedback">10-digit phone required</div>
           </div>
           <div class="col-12">
-            <label class="form-label">Current Location (Kerala)</label>
-            <select class="form-select" name="district" required>
-              <option value="" selected disabled>District</option>
+            <label id="labelDistrict" class="form-label">Current Location (Kerala)</label>
+            <select id="inputDistrict" class="form-select" name="district" required>
+              <option id="optChooseDistrict" value="" selected disabled>District</option>
               <option>Thiruvananthapuram</option>
               <option>Kollam</option>
               <option>Alappuzha</option>
@@ -69,11 +115,11 @@
               <option>Kannur</option>
               <option>Kasaragod</option>
             </select>
-            <div class="invalid-feedback">Select district</div>
+            <div id="errorDistrict" class="invalid-feedback">Select district</div>
           </div>
         </div>
         <div class="d-grid mt-3">
-          <button class="btn btn-success btn-lg" type="submit">Generate Health ID</button>
+          <button id="btnSubmit" class="btn btn-success btn-lg" type="submit">Generate Health ID</button>
         </div>
       </form>
 
@@ -88,7 +134,16 @@
         // simple validation
         if (!form.checkValidity()) {
           form.classList.add('was-validated');
-          App.showToast('Please correct highlighted fields', 'error');
+          const lang = localStorage.getItem(App.STORAGE_KEYS.language) || 'en';
+          const msg = {
+            en: 'Please correct highlighted fields',
+            hi: 'कृपया हाइलाइट किए गए फ़ील्ड ठीक करें',
+            bn: 'অনুগ্রহ করে হাইলাইট করা ক্ষেত্রগুলি ঠিক করুন',
+            ml: 'ദയവായി ഹൈലൈറ്റ് ചെയ്ത ഫീൽഡുകൾ ശരിയാക്കുക',
+            or: 'ଦୟାକରି ହାଇଲାଇଟ୍ ଥିବା ଫିଲ୍ଡଗୁଡିକ ଠିକ କରନ୍ତୁ',
+            ta: 'தயவுசெய்து அடையாளப்படுத்தப்பட்ட புலங்களை சரி செய்யவும்'
+          };
+          App.showToast(msg[lang] || msg.en, 'error');
           return;
         }
 
@@ -98,6 +153,7 @@
           name: fd.get('name').trim(),
           age: Number(fd.get('age')),
           gender: fd.get('gender'),
+          bloodGroup: fd.get('bloodGroup'),
           homeState: fd.get('homeState'),
           phone: '+91 ' + fd.get('phone'),
           currentLocation: { district: fd.get('district') },
@@ -109,6 +165,65 @@
         App.showToast('Health ID generated');
         setTimeout(() => { window.location.href = './health-id.html'; }, 800);
       });
+      
+      (function applyLanguage() {
+        const lang = localStorage.getItem(App.STORAGE_KEYS.language) || 'en';
+        const t = {
+          phPhone: { hi: '10-अंकों की संख्या', bn: '১০-সংখ্যার নম্বর', ml: '10 അക്ക സംഖ്യ', or: '10-ଅଙ୍କୀୟ ସଂଖ୍ୟା', ta: '10 இலக்க எண்' },
+          name: { hi: 'नाम', bn: 'নাম', ml: 'പേര്', or: 'ନାମ', ta: 'பெயர்' },
+          age: { hi: 'उम्र', bn: 'বয়স', ml: 'പ്രായം', or: 'ବୟସ', ta: 'வயது' },
+          gender: { hi: 'लिंग', bn: 'লিঙ্গ', ml: 'ലിംഗം', or: 'ଲିଙ୍ଗ', ta: 'பாலினம்' },
+          blood: { hi: 'रक्त समूह', bn: 'রক্তের গ্রুপ', ml: 'രക്ത ഗ്രൂപ്പ്', or: 'ରୁକ୍ତ ଗୋଷ୍ଠୀ', ta: 'இரத்தக் குழு' },
+          homeState: { hi: 'राज्य', bn: 'রাজ্য', ml: 'സംസ്ഥാനം', or: 'ରାଜ୍ୟ', ta: 'மூல மாநிலம்' },
+          phone: { hi: 'फ़ोन', bn: 'ফোন', ml: 'ഫോൺ', or: 'ଫୋନ୍', ta: 'தொலைபேசி' },
+          district: { hi: 'जिला', bn: 'জেলা', ml: 'ജില്ല', or: 'ଜିଲ୍ଲା', ta: 'மாவட்டம்' },
+          choose: { hi: 'चुनें', bn: 'পছন্দ করুন', ml: 'തിരഞ്ഞെടുക്കുക', or: 'ଛାଣିନିଅନ୍ତୁ', ta: 'தேர்ந்தெடுக்கவும்' },
+          male: { hi: 'पुरुष', bn: 'পুরুষ', ml: 'പുരുഷൻ', or: 'ପୁରୁଷ', ta: 'ஆண்' },
+          female: { hi: 'महिला', bn: 'মহিলা', ml: 'സ്ത്രീ', or: 'ମହିଳା', ta: 'பெண்' },
+          other: { hi: 'अन्य', bn: 'অন্যান্য', ml: 'മറ്റ്', or: 'ଅନ୍ୟ', ta: 'மற்றவை' },
+          title: { hi: 'पंजीकरण', bn: 'নিবন্ধন', ml: 'രജിസ്ട്രേഷൻ', or: 'ନିବନ୍ଧନ', ta: 'பதிவு' },
+          subtitle: { hi: 'कृपया अपनी जानकारी दर्ज करें', bn: 'অনুগ্রহ করে আপনার বিবরণ লিখুন', ml: 'ദയവായി നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക', or: 'ଦୟାକରି ଆପଣଙ୍କ ବିବରଣୀ ଦିଅନ୍ତୁ', ta: 'தயவுசெய்து உங்கள் விவரங்களை உள்ளிடவும்' },
+          submit: { hi: 'हेल्थ आईडी बनाएं', bn: 'হেলথ আইডি জেনারেট করুন', ml: 'ഹെൽത്ത് ഐഡി സൃഷ്ടിക്കുക', or: 'ହେଲ୍ଥ ଆଇଡି ତିଆରି କରନ୍ତୁ', ta: 'ஹெல்த் ஐடி உருவாக்கவும்' },
+          errName: { hi: 'नाम आवश्यक है', bn: 'নাম আবশ্যক', ml: 'പേര് ആവശ്യമാണ്', or: 'ନାମ ଆବଶ୍ୟକ', ta: 'பெயர் அவசியம்' },
+          errAge: { hi: 'मान्य उम्र आवश्यक', bn: 'বৈধ বয়স প্রয়োজন', ml: 'സാധുവായ പ്രായം ആവശ്യമാണ്', or: 'ବୈଧ ବୟସ ଆବଶ୍ୟକ', ta: 'செல்லுபடியாகும் வயது தேவை' },
+          errGender: { hi: 'लिंग चुनें', bn: 'লিঙ্গ নির্বাচন করুন', ml: 'ലിംഗം തിരഞ്ഞെടുക്കുക', or: 'ଲିଙ୍ଗ ଚୟନ କରନ୍ତୁ', ta: 'பாலினத்தைத் தேர்ந்தெடுக்கவும்' },
+          errBlood: { hi: 'रक्त समूह चुनें', bn: 'রক্তের গ্রুপ নির্বাচন করুন', ml: 'രക്ത ഗ്രൂപ്പ് തിരഞ്ഞെടുക്കുക', or: 'ରକ୍ତ ଗୋଷ୍ଠୀ ଚୟନ କରନ୍ତୁ', ta: 'இரத்தக் குழுவைத் தேர்ந்தெடுக்கவும்' },
+          errState: { hi: 'गृहराज्य चुनें', bn: 'বাড়ির রাজ্য নির্বাচন করুন', ml: 'ഹോം സ്റ്റേറ്റ് തിരഞ്ഞെടുക്കുക', or: 'ବାସ ରାଜ୍ୟ ଚୟନ କରନ୍ତୁ', ta: 'வீட்டு மாநிலத்தைத் தேர்ந்தெடுக்கவும்' },
+          errPhone: { hi: '10-अंकों का फोन आवश्यक', bn: '১০-সংখ্যার ফোন প্রয়োজন', ml: '10 അക്ക ഫോൺ ആവശ്യമാണ്', or: '10-ଅଙ୍କିୟ ଫୋନ୍ ଆବଶ୍ୟକ', ta: '10 இலக்க தொலைபேசி தேவை' },
+          errDistrict: { hi: 'ज़िला चुनें', bn: 'জেলা নির্বাচন করুন', ml: 'ജില്ല തിരഞ്ഞെടുക്കുക', or: 'ଜିଲ୍ଲା ଚୟନ କରନ୍ତୁ', ta: 'மாவட்டத்தைத் தேர்ந்தெடுக்கவும்' }
+        };
+        function pair(en, key) {
+          if (lang === 'en') return en;
+          const map = t[key] || {};
+          const local = map[lang];
+          return local ? `${en} | ${local}` : en;
+        }
+        document.getElementById('titleRegister').textContent = pair('Registration', 'title');
+        document.getElementById('subtitleRegister').textContent = pair('Please enter your details', 'subtitle');
+        document.getElementById('labelName').textContent = pair('Name', 'name');
+        document.getElementById('labelAge').textContent = pair('Age', 'age');
+        document.getElementById('labelGender').textContent = pair('Gender', 'gender');
+        document.getElementById('labelBloodGroup').textContent = pair('Blood Group', 'blood');
+        document.getElementById('labelHomeState').textContent = pair('Home State', 'homeState');
+        document.getElementById('labelPhone').textContent = pair('Phone', 'phone');
+        document.getElementById('inputPhone').setAttribute('placeholder', pair('10-digit number', 'phPhone'));
+        document.getElementById('labelDistrict').textContent = pair('Current Location (Kerala)', 'district');
+        document.getElementById('optChooseGender').textContent = pair('Choose', 'choose');
+        document.getElementById('optChooseBlood').textContent = pair('Choose', 'choose');
+        document.getElementById('optChooseState').textContent = pair('Choose', 'choose');
+        document.getElementById('optChooseDistrict').textContent = pair('District', 'district');
+        document.getElementById('optMale').textContent = pair('Male', 'male');
+        document.getElementById('optFemale').textContent = pair('Female', 'female');
+        document.getElementById('optOther').textContent = pair('Other', 'other');
+        document.getElementById('btnSubmit').textContent = pair('Generate Health ID', 'submit');
+        document.getElementById('errorName').textContent = pair('Name is required', 'errName');
+        document.getElementById('errorAge').textContent = pair('Valid age required', 'errAge');
+        document.getElementById('errorGender').textContent = pair('Select gender', 'errGender');
+        document.getElementById('errorBlood').textContent = pair('Select blood group', 'errBlood');
+        document.getElementById('errorHomeState').textContent = pair('Select home state', 'errState');
+        document.getElementById('errorPhone').textContent = pair('10-digit phone required', 'errPhone');
+        document.getElementById('errorDistrict').textContent = pair('Select district', 'errDistrict');
+      })();
     </script>
   </body>
   </html>

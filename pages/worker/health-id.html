@@ -7,66 +7,423 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../../css/main.css" />
     <link rel="stylesheet" href="../../css/mobile.css" />
+    <style>
+      .health-id-card {
+        max-width: 700px;
+        margin: 20px auto;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 2px solid #1B4F72;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        overflow: hidden;
+        font-family: 'Arial', sans-serif;
+      }
+
+      /* HEADER STYLING */
+      .id-card-header {
+        background: linear-gradient(135deg, #1B4F72, #27AE60);
+        color: white;
+        padding: 20px;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .site-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: white;
+        padding: 10px;
+      }
+
+      .header-text h2 {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0;
+        letter-spacing: 1px;
+      }
+
+      .header-text h3 {
+        font-size: 16px;
+        font-weight: 500;
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+      }
+
+      /* CARD BODY - THREE COLUMNS */
+      .card-body {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1.5fr;
+        gap: 20px;
+        padding: 25px;
+        min-height: 300px;
+      }
+
+      /* LEFT SECTION */
+      .left-section {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .worker-photo-placeholder {
+        width: 120px;
+        height: 140px;
+        border: 3px solid #1B4F72;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #ECF0F1;
+        text-align: center;
+      }
+
+      .worker-photo-placeholder p {
+        margin: 8px 0 0 0;
+        font-size: 12px;
+        color: #7F8C8D;
+      }
+
+      .worker-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #1B4F72;
+        text-align: center;
+        display: block;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+
+      .field {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 6px 0;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .field label {
+        font-weight: 600;
+        font-size: 13px;
+        color: #2C3E50;
+        min-width: 80px;
+      }
+
+      .field .value {
+        font-weight: 500;
+        font-size: 13px;
+        color: #34495E;
+      }
+
+      .blood-group-highlight {
+        background: linear-gradient(90deg, #FFE5E5, #FFECEC);
+        border-left: 4px solid #E74C3C;
+        border-radius: 6px;
+      }
+
+      .blood-type {
+        font-size: 16px;
+        font-weight: bold;
+        color: #E74C3C;
+        text-align: center;
+        padding: 2px 8px;
+        background: white;
+        border-radius: 4px;
+      }
+
+      /* CENTER SECTION */
+      .center-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .health-id-number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1B4F72;
+        text-align: center;
+        letter-spacing: 3px;
+        background: linear-gradient(135deg, #ECF0F1, #D5DBDB);
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #BDC3C7;
+        writing-mode: horizontal-tb;
+        transform: rotate(-90deg);
+        white-space: nowrap;
+      }
+
+      /* RIGHT SECTION */
+      .right-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .qr-code-container {
+        width: 140px;
+        height: 140px;
+        border: 2px solid #27AE60;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+
+      .qr-label {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #27AE60;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      /* FOOTER STYLING */
+      .card-footer {
+        background: linear-gradient(135deg, #ECF0F1, #D5DBDB);
+        padding: 15px 25px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+        font-size: 11px;
+        color: #2C3E50;
+        border-top: 1px solid #BDC3C7;
+      }
+
+      .digital-signature {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+      }
+
+      .issue-info {
+        text-align: center;
+        font-weight: 500;
+      }
+
+      .emergency-contact {
+        text-align: right;
+        font-weight: 600;
+        color: #E74C3C;
+      }
+
+      /* RESPONSIVE DESIGN */
+      @media (max-width: 768px) {
+        .card-body {
+          grid-template-columns: 1fr;
+          gap: 15px;
+          text-align: center;
+        }
+        
+        .health-id-number {
+          transform: none;
+          font-size: 24px;
+          writing-mode: horizontal-tb;
+        }
+        
+        .card-footer {
+          grid-template-columns: 1fr;
+          text-align: center;
+          gap: 10px;
+        }
+        
+        .header-content {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+
+      /* ACTION BUTTONS */
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin: 20px;
+        justify-content: center;
+      }
+
+      .action-btn {
+        flex: 1;
+        max-width: 200px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+      }
+
+      .save-btn {
+        background: linear-gradient(135deg, #3498DB, #2980B9);
+        color: white;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+      }
+
+      .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
+
+      .share-btn {
+        background: linear-gradient(135deg, #27AE60, #229954);
+        color: white;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+      }
+
+      .share-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+      }
+    </style>
   </head>
   <body>
-    <div class="container py-4" style="max-width:560px;">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <a href="./register.html" class="text-decoration-none small">&larr; Back</a>
-        <a href="../../index.html" class="small">Home</a>
-      </div>
-      <div class="card border-0 shadow-sm p-3 text-center mobile-card">
-        <h1 class="h5 fw-bold">Your Health ID</h1>
-        <p class="text-muted small">Show this at any Kerala healthcare facility</p>
-
-        <div class="qr-box mx-auto mt-2" style="width: 260px;">
-          <div id="qrContainer"></div>
-        </div>
-        <div class="mt-3">
-          <div class="fw-semibold" id="healthIdText">MW------</div>
-          <div class="text-muted" id="workerName">—</div>
-          <div class="small" id="workerMeta">—</div>
-        </div>
-
-        <div class="d-grid gap-2 mt-3">
-          <button id="saveBtn" class="btn btn-outline-primary tap-target">Save to Phone</button>
-          <button id="shareBtn" class="btn btn-success tap-target">Share</button>
+    <div class="health-id-card">
+      <div class="id-card-header">
+        <div class="header-content">
+          <div class="website-logo">
+            <img src="assets/logo.png" alt="Arogya Rekha" class="site-logo" />
+          </div>
+          <div class="header-text">
+            <h2>AROGYA REKHA - DIGITAL HEALTH RECORD</h2>
+            <h3>MIGRANT WORKER HEALTH ID</h3>
+          </div>
         </div>
       </div>
-      <p class="text-center text-muted small mt-3">Tip: Take a screenshot to save your QR</p>
+
+      <div class="card-body">
+        <div class="left-section">
+          <div class="photo-section">
+            <div class="worker-photo-placeholder">
+              <i class="fas fa-user" style="font-size: 60px; color: #7F8C8D;"></i>
+              <p>Worker Photo</p>
+            </div>
+          </div>
+          <div class="worker-details">
+            <div class="field name-field">
+              <span class="worker-name" id="workerName">[WORKER_NAME]</span>
+            </div>
+            <div class="field">
+              <label>Gender:</label>
+              <span class="value" id="workerGender">[GENDER]</span>
+            </div>
+            <div class="field">
+              <label>DOB:</label>
+              <span class="value" id="workerDOB">[DATE_OF_BIRTH]</span>
+            </div>
+            <div class="field blood-group-highlight">
+              <label>Blood Group:</label>
+              <span class="value blood-type" id="workerBloodGroup">[BLOOD_GROUP]</span>
+            </div>
+            <div class="field">
+              <label>Home State:</label>
+              <span class="value" id="workerHomeState">[HOME_STATE]</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="center-section">
+          <div class="health-id-container">
+            <div class="health-id-number" id="healthIdNumber">[HEALTH_ID]</div>
+          </div>
+        </div>
+
+        <div class="right-section">
+          <div class="qr-section">
+            <div id="qr-code" class="qr-code-container"></div>
+            <p class="qr-label">Scan for Medical Records</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="footer-left">
+          <div class="digital-signature">
+            <span>🔒 Digitally Signed by Kerala Health Department</span>
+          </div>
+        </div>
+        <div class="footer-center">
+          <div class="issue-info" id="issueDate">Issue Date: [ISSUE_DATE]</div>
+        </div>
+        <div class="footer-right">
+          <div class="emergency-contact" id="emergencyContact">Emergency: [PHONE_NUMBER]</div>
+        </div>
+      </div>
     </div>
 
-    <div class="app-toast" role="status" aria-live="polite"></div>
+    <div class="action-buttons">
+      <button id="saveBtn" class="action-btn save-btn">Save to Phone</button>
+      <button id="shareBtn" class="action-btn share-btn">Share</button>
+    </div>
 
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="../../js/main.js"></script>
-    <!-- QRCode library (required by qr-generator) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="../../js/qr-generator.js"></script>
     <script>
       const id = App.getSelectedWorker();
       const worker = id ? App.findWorkerById(id) : null;
-      if (!worker) { window.location.href = './register.html'; }
+      if (!worker) {
+        window.location.href = './register.html';
+      }
 
-      document.getElementById('healthIdText').textContent = worker.healthId;
-      document.getElementById('workerName').textContent = worker.name + ' • ' + worker.gender + ', ' + worker.age;
-      document.getElementById('workerMeta').textContent = worker.homeState + ' • ' + (worker.currentLocation?.district || 'Kerala');
+      // Format date helper
+      function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
 
-      // Try to render QR; if it fails or remains empty, show a dummy QR image
-      try { QR.render('qrContainer', worker.healthId, 240); } catch (e) {}
-      setTimeout(() => {
-        const container = document.getElementById('qrContainer');
-        if (!container.firstChild) {
-          const img = new Image();
-          const data = encodeURIComponent(worker.healthId || 'AROGYA_REKHA_DEMO');
-          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${data}`;
-          img.alt = 'Health ID QR (demo)';
-          img.width = 240; img.height = 240;
-          container.appendChild(img);
-        }
-      }, 200);
+      // Populate worker data
+      document.getElementById('workerName').textContent = worker.name.toUpperCase();
+      document.getElementById('workerGender').textContent = worker.gender;
+      document.getElementById('workerDOB').textContent = formatDate(worker.dob);
+      document.getElementById('workerBloodGroup').textContent = worker.bloodGroup || 'N/A';
+      document.getElementById('workerHomeState').textContent = worker.homeState;
+      document.getElementById('healthIdNumber').textContent = worker.healthId;
 
+      // Format and set issue date
+      const today = new Date();
+      document.getElementById('issueDate').textContent = 'Issue Date: ' + formatDate(today.toISOString());
+
+      // Emergency contact
+      document.getElementById('emergencyContact').textContent = 'Emergency: ' + (worker.phoneNumber || 'N/A');
+
+      // Generate QR code with all worker data
+      const qrData = JSON.stringify({
+        name: worker.name,
+        healthId: worker.healthId,
+        gender: worker.gender,
+        dob: worker.dob,
+        bloodGroup: worker.bloodGroup || 'N/A',
+        homeState: worker.homeState,
+        phoneNumber: worker.phoneNumber || 'N/A'
+      });
+
+      const qrContainer = document.getElementById('qr-code');
+      new QRCode(qrContainer, {
+        text: qrData,
+        width: 140,
+        height: 140,
+        colorDark: '#27AE60',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Save and Share button handlers
       document.getElementById('saveBtn').addEventListener('click', () => {
         App.showToast('Saved to downloads (simulated)');
       });
+
       document.getElementById('shareBtn').addEventListener('click', async () => {
         try {
           if (navigator.share) {
@@ -79,5 +436,4 @@
       });
     </script>
   </body>
-  </html>
-
+</html>
