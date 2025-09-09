@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Language | Worker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/mobile.css" />
+  </head>
+  <body>
+    <div class="container py-4" style="max-width: 560px;">
+      <h1 class="h4 text-center fw-bold mb-3">ഭാഷ തിരഞ്ഞെടുക്കുക | भाषा चुनें | ভাষা নির্বাচন করুন</h1>
+      <p class="text-center text-muted small">Choose your preferred language</p>
+
+      <div class="language-grid mt-4">
+        <button class="language-btn tap-target" data-lang="en">English</button>
+        <button class="language-btn tap-target" data-lang="ml">Malayalam (മലയാളം)</button>
+        <button class="language-btn tap-target" data-lang="hi">Hindi (हिंदी)</button>
+        <button class="language-btn tap-target" data-lang="bn">Bengali (বাংলা)</button>
+        <button class="language-btn tap-target" data-lang="or">Odia (ଓଡିଆ)</button>
+        <button class="language-btn tap-target" data-lang="ta">Tamil (தமிழ்)</button>
+      </div>
+
+      <div class="d-grid mt-4">
+        <a id="continueBtn" class="btn btn-success btn-lg disabled" href="#">Continue</a>
+      </div>
+
+      <div class="app-toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/main.js"></script>
+    <script>
+      const buttons = document.querySelectorAll('.language-btn');
+      const continueBtn = document.getElementById('continueBtn');
+      let selected = null;
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selected = btn.getAttribute('data-lang');
+          localStorage.setItem(App.STORAGE_KEYS.language, selected);
+          continueBtn.classList.remove('disabled');
+        });
+      });
+
+      continueBtn.addEventListener('click', (e) => {
+        if (!selected) { e.preventDefault(); App.showToast('Please select a language', 'error'); return; }
+        continueBtn.setAttribute('href', './register.html');
+      });
+    </script>
+  </body>
+  </html>
+

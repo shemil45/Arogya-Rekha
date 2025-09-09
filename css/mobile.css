@@ -1,0 +1,21 @@
+/* Mobile-first enhancements */
+
+@media (max-width: 768px) {
+	.navbar .btn-lg { font-size: 1rem; }
+	.hero-card { margin-top: 16px; }
+	.d-grid .btn { min-height: 48px; }
+	.form-control, .form-select { min-height: 44px; font-size: 1rem; }
+	.list-group-item { padding: 14px 16px; }
+}
+
+/* Worker mobile UI */
+.language-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (min-width: 769px) {
+	.language-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+.language-btn { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; text-align: center; }
+.language-btn.active { border-color: var(--brand-secondary); box-shadow: 0 0 0 3px rgba(39,174,96,.15); }
+
+.mobile-card { border-radius: 16px; }
+

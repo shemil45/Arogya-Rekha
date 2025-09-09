@@ -1,0 +1,53 @@
+/* Base styles for Arogya Rekha prototype */
+:root {
+	--brand-primary: #1B4F72;
+	--brand-secondary: #27AE60;
+	--brand-accent: #E67E22;
+	--brand-bg: #F8F9FA;
+}
+
+body {
+	background-color: var(--brand-bg);
+	font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Liberation Sans", "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.text-primary-brand { color: var(--brand-primary) !important; }
+.text-accent { color: var(--brand-accent) !important; }
+
+.btn-success { background-color: var(--brand-secondary); border-color: var(--brand-secondary); }
+.btn-outline-primary { color: var(--brand-primary); border-color: var(--brand-primary); }
+.btn-outline-primary:hover { background: var(--brand-primary); color: #fff; }
+
+.hero-card { border-radius: 16px; }
+.mini-card { border-radius: 12px; }
+
+/* Cards */
+.card-elevated { box-shadow: 0 8px 24px rgba(0,0,0,0.08); border: 0; }
+
+/* Toasts */
+.app-toast {
+	position: fixed;
+	bottom: 16px;
+	right: 16px;
+	min-width: 240px;
+	background: #fff;
+	border-left: 4px solid var(--brand-secondary);
+	box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+	border-radius: 8px;
+	padding: 12px 14px;
+	z-index: 1070;
+	display: none;
+}
+.app-toast.show { display: block; animation: slideIn .25s ease; }
+@keyframes slideIn { from { transform: translateY(8px); opacity: .5; } to { transform: translateY(0); opacity: 1; } }
+
+/* Utility */
+.tap-target { min-height: 44px; }
+.qr-box { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+
+/* Tabs override for clarity */
+.nav-tabs .nav-link.active { color: var(--brand-primary); font-weight: 600; }
+
+/* Map container */
+#keralaMap, .map-container { height: 360px; border-radius: 12px; overflow: hidden; }
+

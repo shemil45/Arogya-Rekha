@@ -1,0 +1,9 @@
+#keralaMap { height: 420px; }
+.leaflet-popup-content { margin: 6px 8px; }
+.status-good { color: #27AE60; }
+.status-warn { color: #E67E22; }
+.status-bad { color: #dc3545; }
+
+#districtTable .row { border-bottom: 1px solid #eee; padding: 6px 0; }
+#districtTable .row div { font-size: 14px; }
+
