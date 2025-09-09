@@ -1,0 +1,303 @@
+/* Health ID Card Styles */
+body {
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px 0;
+}
+
+/* Card Container */
+.health-id-card {
+  width: 337.5px;
+  height: 212.5px;
+  max-width: 337.5px;
+  max-height: 212.5px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #1B4F72;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+  font-size: 10px;
+  margin: 20px auto;
+  position: relative;
+}
+
+/* Header Section */
+.id-card-header {
+  background: linear-gradient(135deg, #1B4F72, #27AE60);
+  color: white;
+  text-align: center;
+  padding: 4px 8px;
+  height: 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.id-card-header h2 {
+  font-size: 9px;
+  margin: 0;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.id-card-header h3 {
+  font-size: 8px;
+  margin: 2px 0 0 0;
+  font-weight: normal;
+}
+
+.website-logo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6px;
+  color: #1B4F72;
+  font-weight: bold;
+}
+
+/* Three Column Body Layout */
+.card-body {
+  display: flex;
+  padding: 8px;
+  height: 140px;
+  gap: 5px;
+}
+
+/* Left Section - Photo and Basic Info */
+.left-section {
+  flex: 0 0 110px;
+  display: flex;
+  flex-direction: column;
+}
+
+.worker-photo {
+  width: 50px;
+  height: 60px;
+  border: 1px solid #1B4F72;
+  margin-bottom: 3px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.worker-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.worker-name {
+  font-size: 9px;
+  font-weight: bold;
+  color: #1B4F72;
+  margin: 5px 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.basic-info {
+  flex: 1;
+  margin-top: 5px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 0;
+  font-size: 7px;
+  padding: 1px 3px;
+}
+
+.info-item .label {
+  font-weight: 600;
+  color: #2C3E50;
+  white-space: nowrap;
+}
+
+.blood-group-section {
+  background: #FFE5E5;
+  border-left: 2px solid #E74C3C;
+  padding: 2px 3px;
+  margin: 3px 0;
+  border-radius: 2px;
+}
+
+.blood-type {
+  font-size: 9px;
+  font-weight: bold;
+  color: #E74C3C;
+}
+
+/* Center Section - Health ID */
+.center-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.health-id-number {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1B4F72;
+  text-align: center;
+  letter-spacing: 1px;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+/* Right Section - QR Code */
+.right-section {
+  flex: 0 0 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-code-container {
+  text-align: center;
+}
+
+#qr-code {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 3px;
+  background: white;
+  padding: 3px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-label {
+  font-size: 6px;
+  color: #7F8C8D;
+  margin: 0;
+}
+
+/* Footer Section */
+.card-footer {
+  background: #ECF0F1;
+  padding: 3px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 25px;
+  font-size: 6px;
+  color: #7F8C8D;
+  border-top: 1px solid #ddd;
+}
+
+.digital-signature {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  display: inline-block;
+}
+
+.right-footer {
+  text-align: right;
+  line-height: 1.2;
+}
+
+.issue-date, .emergency-contact {
+  display: block;
+  margin: 1px 0;
+  white-space: nowrap;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.save-btn {
+  background: #3498db;
+  color: white;
+}
+
+.share-btn {
+  background: #2ecc71;
+  color: white;
+}
+
+.print-btn {
+  background: #9b59b6;
+  color: white;
+}
+
+.action-btn i {
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .health-id-card {
+    transform: scale(0.9);
+    transform-origin: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .health-id-card {
+    transform: scale(0.8);
+  }
+}
+
+/* Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .health-id-card, .health-id-card * {
+    visibility: visible;
+  }
+  .health-id-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3.375in !important;
+    height: 2.125in !important;
+    transform: none !important;
+    box-shadow: none;
+    border: 1px solid #000 !important;
+    margin: 0 !important;
+  }
+  .action-buttons {
+    display: none;
+  }
+}
