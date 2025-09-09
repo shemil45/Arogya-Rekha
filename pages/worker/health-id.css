@@ -32,6 +32,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  align-items: center;
 }
 
 .id-card-header h2 {
@@ -49,18 +51,31 @@ body {
 
 .website-logo {
   position: absolute;
-  top: 8px;
+  top: 50%;
   right: 8px;
-  width: 20px;
-  height: 20px;
-  background: white;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 6px;
   color: #1B4F72;
   font-weight: bold;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.website-logo i {
+  font-size: 20px;
+  width: 1em;
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 /* Three Column Body Layout */
@@ -144,9 +159,19 @@ body {
 .center-section {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 0 5px;
+}
+
+.health-id-heading {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1B4F72;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .health-id-number {
@@ -155,7 +180,6 @@ body {
   color: #1B4F72;
   text-align: center;
   letter-spacing: 1px;
-  transform: rotate(-90deg);
   white-space: nowrap;
   min-width: 100px;
 }
