@@ -20,6 +20,8 @@
     </nav>
 
     <div class="container py-4">
+      <div id="alertBanner" class="alert alert-warning d-none" role="alert"></div>
+
       <div class="row g-3">
         <div class="col-12 col-lg-4">
           <div class="card card-elevated p-3">
@@ -28,7 +30,13 @@
                 <div class="small text-muted">Role</div>
                 <div class="fw-bold" id="roleText">—</div>
               </div>
-              <a href="./scanner.html" class="btn btn-success">Open Scanner</a>
+            </div>
+          </div>
+          <div class="card card-elevated p-3 mt-3">
+            <div class="small text-muted mb-2">Quick Actions</div>
+            <div class="d-grid gap-2">
+              <a href="./scanner.html" class="btn btn-success">Scan Patient QR</a>
+              <button class="btn btn-outline-primary" id="btnDailyReport">Daily Report</button>
             </div>
           </div>
           <div class="card card-elevated p-3 mt-3">
@@ -41,11 +49,60 @@
             <div class="d-flex align-items-center justify-content-between">
               <h2 class="h5 m-0">Search Patient</h2>
             </div>
-            <div class="input-group mt-2">
-              <input id="searchId" type="text" class="form-control" placeholder="Enter Health ID (e.g. MW123456)" />
-              <button id="searchBtn" class="btn btn-primary">Open</button>
-            </div>
-            <div class="small text-muted mt-2">Tip: Use the scanner for faster access</div>
+            <form id="advancedSearch" class="row g-2 mt-1">
+              <div class="col-12 col-md-4">
+                <input id="searchHealthId" type="text" class="form-control" placeholder="Enter Health ID (e.g., MW123456)" />
+              </div>
+              <div class="col-12 col-md-4">
+                <input id="searchName" type="text" class="form-control" placeholder="Patient Name" />
+              </div>
+              <div class="col-12 col-md-4">
+                <select id="searchState" class="form-select">
+                  <option value="">Home State</option>
+                  <option>Andaman and Nicobar Islands</option>
+                  <option>Andhra Pradesh</option>
+                  <option>Arunachal Pradesh</option>
+                  <option>Assam</option>
+                  <option>Bihar</option>
+                  <option>Chandigarh</option>
+                  <option>Chhattisgarh</option>
+                  <option>Dadra and Nagar Haveli and Daman and Diu</option>
+                  <option>Delhi</option>
+                  <option>Goa</option>
+                  <option>Gujarat</option>
+                  <option>Haryana</option>
+                  <option>Himachal Pradesh</option>
+                  <option>Jammu and Kashmir</option>
+                  <option>Jharkhand</option>
+                  <option>Karnataka</option>
+                  <option>Kerala</option>
+                  <option>Ladakh</option>
+                  <option>Lakshadweep</option>
+                  <option>Madhya Pradesh</option>
+                  <option>Maharashtra</option>
+                  <option>Manipur</option>
+                  <option>Meghalaya</option>
+                  <option>Mizoram</option>
+                  <option>Nagaland</option>
+                  <option>Odisha</option>
+                  <option>Puducherry</option>
+                  <option>Punjab</option>
+                  <option>Rajasthan</option>
+                  <option>Sikkim</option>
+                  <option>Tamil Nadu</option>
+                  <option>Telangana</option>
+                  <option>Tripura</option>
+                  <option>Uttar Pradesh</option>
+                  <option>Uttarakhand</option>
+                  <option>West Bengal</option>
+                </select>
+              </div>
+            </form>
+            <div class="small text-muted mt-2">Filters update results in real time. Tip: Use the scanner for faster access.</div>
+          </div>
+          <div class="card card-elevated p-3 mt-3">
+            <div class="small text-muted">Search Results</div>
+            <div id="searchResults" class="mt-2"></div>
           </div>
         </div>
       </div>
@@ -53,10 +110,47 @@
 
     <div class="app-toast"></div>
 
+    <!-- Daily Report Modal -->
+    <div class="modal fade" id="dailyReportModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Daily Report</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-2">
+              <div class="col-6"><div class="card card-elevated p-3"><div class="small text-muted">Total Patients</div><div class="h4 m-0" id="drTotal"></div></div></div>
+              <div class="col-6"><div class="card card-elevated p-3"><div class="small text-muted">Today's Visits</div><div class="h4 m-0" id="drVisits"></div></div></div>
+              <div class="col-6"><div class="card card-elevated p-3"><div class="small text-muted">Critical Cases</div><div class="h4 m-0 text-danger" id="drCritical"></div></div></div>
+              <div class="col-6"><div class="card card-elevated p-3"><div class="small text-muted">Pending Reports</div><div class="h4 m-0 text-accent" id="drPending"></div></div></div>
+            </div>
+            <div class="small text-muted mt-2">Report generated from current local data.</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/data.js"></script>
     <script src="../../js/main.js"></script>
+    <script src="../../js/provider.js"></script>
     <script>
       document.getElementById('roleText').textContent = localStorage.getItem(App.STORAGE_KEYS.providerRole) || '—';
+      // stats row removed; keep only alert banner and quick actions
+
+      (function(){
+        const workers = App.getWorkers();
+        const critical = workers.filter(w => w.status === 'Critical').length;
+        const banner = document.getElementById('alertBanner');
+        if (critical > 0) {
+          banner.classList.remove('d-none');
+          banner.innerHTML = `<strong>Alert:</strong> ${critical} critical patient${critical>1?'s':''} require attention.`;
+        }
+      })();
       const recent = (App.getWorkers() || []).slice(0, 5);
       const list = document.getElementById('recentList');
       if (recent.length === 0) {
@@ -70,12 +164,27 @@
         });
       }
 
-      document.getElementById('searchBtn').addEventListener('click', () => {
-        const id = document.getElementById('searchId').value.trim();
-        if (!id) { App.showToast('Enter a Health ID', 'error'); return; }
-        const w = App.findWorkerById(id);
-        if (!w) { App.showToast('No patient found', 'error'); return; }
-        window.location.href = `./patient-record.html?id=${id}`;
+      const inputs = ['searchHealthId','searchName','searchState'].map(id=>document.getElementById(id));
+      inputs.forEach(el => el.addEventListener('input', () => {
+        Provider.performAdvancedSearch({
+          healthId: document.getElementById('searchHealthId').value,
+          name: document.getElementById('searchName').value,
+          state: document.getElementById('searchState').value
+        });
+      }));
+      Provider.performAdvancedSearch({ healthId:'', name:'', state:'' });
+
+      document.getElementById('btnDailyReport').addEventListener('click', () => {
+        const modalEl = document.getElementById('dailyReportModal');
+        const workers = App.getWorkers();
+        const todayStr = new Date().toISOString().slice(0,10);
+        let visits = 0; let critical = 0; let pending = 0;
+        workers.forEach(w=>{ (w.records||[]).forEach(r=>{ if (r.date===todayStr) visits++; if (r.pending) pending++; }); if (w.status==='Critical') critical++; });
+        document.getElementById('drTotal').textContent = workers.length;
+        document.getElementById('drVisits').textContent = visits;
+        document.getElementById('drCritical').textContent = critical;
+        document.getElementById('drPending').textContent = pending;
+        if (window.bootstrap) new bootstrap.Modal(modalEl).show();
       });
     </script>
   </body>
