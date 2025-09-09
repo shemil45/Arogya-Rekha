@@ -53,6 +53,9 @@
           <button class="nav-link" data-bs-toggle="tab" data-bs-target="#prescriptions" type="button" role="tab">Prescriptions</button>
         </li>
         <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#allergies" type="button" role="tab">Allergies</button>
+        </li>
+        <li class="nav-item" role="presentation">
           <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab">Clinical Notes</button>
         </li>
       </ul>
@@ -71,11 +74,49 @@
           <div id="historyList"></div>
         </div>
         <div id="vaccinations" class="tab-pane fade p-3">
-          <p class="text-muted">No vaccination records available in demo.</p>
-          <div class="small text-muted">Due tracking will appear here when available.</div>
+          <div class="small text-muted">Vaccination Records</div>
+          <div id="vaccinationsList" class="mt-2"></div>
         </div>
         <div id="prescriptions" class="tab-pane fade p-3">
-          <p class="text-muted">No prescriptions available in demo.</p>
+          <div class="small text-muted">Current & Past Prescriptions</div>
+          <div id="prescriptionsList" class="mt-2"></div>
+        </div>
+        <div id="allergies" class="tab-pane fade p-3">
+          <div class="d-flex flex-column flex-md-row gap-3">
+            <div class="flex-grow-1">
+              <div class="small text-muted">Recorded Allergies</div>
+              <div id="allergyList" class="mt-2"></div>
+            </div>
+            <div class="flex-grow-1">
+              <div class="small text-muted">Add New Allergy</div>
+              <form id="allergyForm" class="needs-validation mt-2" novalidate>
+                <div class="row g-2">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Allergy Name</label>
+                    <input name="name" class="form-control" placeholder="e.g., Penicillin" required />
+                    <div class="invalid-feedback">Required</div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-select" required>
+                      <option value="">Select type</option>
+                      <option value="medication">Medication</option>
+                      <option value="food">Food</option>
+                      <option value="environmental">Environmental</option>
+                    </select>
+                    <div class="invalid-feedback">Select a type</div>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <label class="form-label">Description (optional)</label>
+                  <textarea name="description" class="form-control" rows="3" placeholder="Reaction, severity, notes..."></textarea>
+                </div>
+                <div class="d-grid d-md-flex gap-2 mt-2">
+                  <button type="submit" class="btn btn-success">Add Allergy</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
         <div id="notes" class="tab-pane fade p-3">
           <div class="small text-muted">Private Clinical Notes</div>
@@ -96,8 +137,62 @@
     <script>
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
-      const worker = App.findWorkerById(id);
-      if (!worker) { window.location.href = './dashboard.html'; }
+
+      // Demo/mock worker for UI showcase when no worker is found via query
+      const MOCK_WORKER = {
+        healthId: 'RK-ERK-2801',
+        name: 'Rahul Kumar',
+        age: 28,
+        gender: 'Male',
+        homeState: 'Bihar',
+        currentLocation: { district: 'Ernakulam' },
+        status: 'Active',
+        nextAppointment: null,
+        records: [
+          {
+            date: '2025-08-15',
+            time: '10:30',
+            visitType: 'Consultation',
+            chiefComplaint: 'Fever and body ache',
+            bp: '118/76',
+            temp: '100.4°F',
+            hr: '78 bpm',
+            weight: '66 kg',
+            diagnosis: 'Viral fever',
+            treatment: 'Rest, hydration, antipyretics',
+            prescription: 'Paracetamol 500mg, 3/day for 5 days'
+          }
+        ],
+        history: [
+          { date: '2023-07-22', type: 'Diagnosis', notes: 'Typhoid fever treated successfully.' },
+          { date: '2024-06-12', type: 'Diagnosis', notes: 'Lower back pain; advised physiotherapy and NSAIDs.' },
+          { date: '2021-09-05', type: 'Diagnosis', notes: 'Malaria (P. vivax); completed antimalarial course.' },
+          { date: '—', type: 'Surgeries', notes: 'None' },
+          { date: '—', type: 'Chronic conditions', notes: 'None' }
+        ],
+        vaccinations: [
+          { name: 'COVID-19 (Covishield)', doses: 2, lastDate: '2022-05-20' },
+          { name: 'Tetanus', doses: 1, lastDate: '2023-03-10' },
+          { name: 'Hepatitis B', doses: 1, lastDate: '2021-01-18' }
+        ],
+        prescriptions: [
+          { drug: 'Paracetamol', strength: '500mg', frequency: '3/day', duration: '5 days', reason: 'Fever', date: '2025-08-15' },
+          { drug: 'Ibuprofen', strength: '400mg', frequency: '2/day', duration: '7 days', reason: 'Back pain', date: '2024-06-12' }
+        ],
+        allergies: [
+          { name: 'Penicillin', type: 'medication', description: 'Reaction: rash. Note: avoid all penicillin-class drugs.' },
+          { name: 'Peanuts', type: 'food', description: 'Reaction: swelling. Note: carries epipen.' },
+          { name: 'Dust', type: 'environmental', description: 'Reaction: sneezing. Note: mild severity.' }
+        ],
+        clinicalNotes: [
+          'Patient is a migrant worker reporting increased fatigue due to long work hours. Advised rest, hydration, and periodic wellness check-ups.',
+          'No psychological distress noted. BP and HR normal. Follow-up in one month.'
+        ].join('\n\n')
+      };
+
+      let worker = App.findWorkerById(id);
+      // If no worker found, use mock for demo and skip redirect
+      if (!worker) { worker = { ...MOCK_WORKER }; }
 
       document.getElementById('pid').textContent = worker.healthId;
       document.getElementById('pname').textContent = worker.name;
@@ -137,6 +232,151 @@
 
       renderTimeline();
       renderHistory();
+
+      // Vaccinations: render list for demo and real data
+      function renderVaccinations() {
+        const container = document.getElementById('vaccinationsList');
+        if (!container) return;
+        container.innerHTML = '';
+        const list = worker.vaccinations || [];
+        if (list.length === 0) { container.innerHTML = '<div class="text-muted">No vaccination records</div>'; return; }
+        const group = document.createElement('div');
+        group.className = 'list-group';
+        list.forEach(v => {
+          const row = document.createElement('div');
+          row.className = 'list-group-item d-flex justify-content-between align-items-start flex-column flex-md-row gap-1';
+          row.innerHTML = `
+            <div>
+              <div class="fw-semibold">${v.name}</div>
+              <div class="text-muted small">Doses: ${v.doses||'-'} • Last: ${v.lastDate||'-'}</div>
+            </div>
+            <span class="badge bg-success align-self-md-center">Up to date</span>
+          `;
+          group.appendChild(row);
+        });
+        container.appendChild(group);
+      }
+
+      // Prescriptions: render list items
+      function renderPrescriptions() {
+        const container = document.getElementById('prescriptionsList');
+        if (!container) return;
+        container.innerHTML = '';
+        const list = worker.prescriptions || [];
+        if (list.length === 0) { container.innerHTML = '<div class="text-muted">No prescriptions</div>'; return; }
+        const group = document.createElement('div');
+        group.className = 'list-group';
+        list.forEach(p => {
+          const row = document.createElement('div');
+          row.className = 'list-group-item';
+          row.innerHTML = `
+            <div class="d-flex justify-content-between flex-column flex-md-row gap-1">
+              <div class="fw-semibold">${p.drug} ${p.strength}</div>
+              <div class="text-muted small">${p.date||''}</div>
+            </div>
+            <div class="small">${p.frequency} for ${p.duration}</div>
+            <div class="text-muted small">Reason: ${p.reason||'-'}</div>
+          `;
+          group.appendChild(row);
+        });
+        container.appendChild(group);
+      }
+
+      // Pre-fill clinical notes textarea for demo
+      (function seedNotes(){
+        const ta = document.getElementById('clinicalNotes');
+        if (ta && worker.clinicalNotes) ta.value = worker.clinicalNotes;
+      })();
+
+      // Render demo lists
+      renderVaccinations();
+      renderPrescriptions();
+
+      // Ensure allergies exist and re-render (already done below as well)
+      worker.allergies = Array.isArray(worker.allergies) ? worker.allergies : [];
+
+      // ------------------ Allergies Section ------------------
+      // Ensure allergies array exists for the current worker in local state
+      worker.allergies = Array.isArray(worker.allergies) ? worker.allergies : [];
+
+      // Map type to a human friendly label and bootstrap color
+      const allergyTypeMeta = {
+        medication: { label: 'Medication', color: 'danger' },
+        food: { label: 'Food', color: 'warning' },
+        environmental: { label: 'Environmental', color: 'info' }
+      };
+
+      // Render the list of allergies
+      function renderAllergies() {
+        const container = document.getElementById('allergyList');
+        if (!container) return;
+        container.innerHTML = '';
+        const list = worker.allergies || [];
+        if (list.length === 0) {
+          container.innerHTML = '<div class="text-muted">No recorded allergies</div>';
+          return;
+        }
+        const ul = document.createElement('div');
+        ul.className = 'list-group';
+        list.forEach((item, index) => {
+          const meta = allergyTypeMeta[item.type] || { label: item.type || 'Other', color: 'secondary' };
+          const row = document.createElement('div');
+          row.className = 'list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2';
+          row.innerHTML = `
+            <div>
+              <div class="fw-semibold">${item.name || '—'}
+                <span class="badge bg-${meta.color} ms-1">${meta.label}</span>
+              </div>
+              ${item.description ? `<div class="text-muted small">${item.description}</div>` : ''}
+            </div>
+            <div class="ms-md-3">
+              <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-allergy" data-index="${index}">Remove</button>
+            </div>
+          `;
+          ul.appendChild(row);
+        });
+        container.appendChild(ul);
+      }
+
+      renderAllergies();
+
+      // Handle add allergy form submit
+      document.getElementById('allergyForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = e.target;
+        // Validate required fields similar to other forms
+        if (!form.checkValidity()) { form.classList.add('was-validated'); App.showToast('Please complete required fields', 'error'); return; }
+        const fd = new FormData(form);
+        const name = (fd.get('name')||'').toString().trim();
+        const type = (fd.get('type')||'').toString();
+        const description = (fd.get('description')||'').toString().trim();
+        // Append to local state for current worker
+        worker.allergies.push({ name, type, description });
+        // Persist to local storage using existing helper
+        App.saveWorker(worker);
+        // Re-render list immediately
+        renderAllergies();
+        App.showToast('Allergy added');
+        form.reset();
+        form.classList.remove('was-validated');
+      });
+
+      // Delegate remove action for allergies list
+      document.getElementById('allergyList')?.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!(target instanceof HTMLElement)) return;
+        if (target.dataset.action === 'remove-allergy') {
+          const idxStr = target.dataset.index || '-1';
+          const idx = parseInt(idxStr, 10);
+          if (!Number.isNaN(idx) && idx >= 0 && idx < (worker.allergies?.length||0)) {
+            // Remove from array and persist
+            worker.allergies.splice(idx, 1);
+            App.saveWorker(worker);
+            renderAllergies();
+            App.showToast('Allergy removed');
+          }
+        }
+      });
 
       // Add Record modal handling
       document.getElementById('addRecordForm')?.addEventListener('submit', (e) => {
