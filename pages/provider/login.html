@@ -1,60 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Provider Login</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Provider Authentication | Arogya Rekha</title>
+    <meta name="description" content="Secure healthcare provider login and registration for Arogya Rekha digital health records">
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="../../css/main.css" />
     <link rel="stylesheet" href="../../css/mobile.css" />
-  </head>
-  <body>
-    <div class="container py-4" style="max-width:560px;">
-      <a href="../../index.html" class="text-decoration-none small">&larr; Home</a>
-      <h1 class="h4 fw-bold mt-2">Healthcare Provider Login</h1>
-      <p class="text-muted small">Demo authentication for SIH prototype</p>
+    <link rel="stylesheet" href="../../css/auth.css" />
+</head>
+<body class="auth-body">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color:#1B4F72;">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="../../index.html">
+                <span class="me-2"><i class="fas fa-heartbeat"></i></span>
+                Arogya Rekha
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="../../index.html">
+                    <i class="fas fa-home me-1"></i> Home
+                </a>
+            </div>
+        </div>
+    </nav>
 
-      <form id="loginForm" class="card border-0 shadow-sm p-3 mobile-card" novalidate>
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" name="email" required />
-          <div class="invalid-feedback">Valid email required</div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" name="password" required />
-          <div class="invalid-feedback">Password required</div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Role</label>
-          <select class="form-select" name="role" required>
-            <option value="" selected disabled>Select role</option>
-            <option>Doctor</option>
-            <option>Nurse</option>
-            <option>Health Worker</option>
-          </select>
-          <div class="invalid-feedback">Select a role</div>
-        </div>
-        <div class="d-grid">
-          <button class="btn btn-success btn-lg" type="submit">Login</button>
-        </div>
-      </form>
+    <!-- Main Content -->
+    <div class="container-fluid auth-container-wrapper">
+        <div class="row justify-content-center min-vh-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5 d-flex align-items-center">
+                <div class="auth-container w-100">
+                    <!-- Header Section -->
+                    <div class="text-center mb-4">
+                        <div class="auth-icon mb-3">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h1 class="h3 fw-bold text-primary-brand">Healthcare Provider Portal</h1>
+                        <p class="text-muted">Secure access to patient health records and medical services</p>
+                    </div>
 
-      <div class="app-toast" role="status" aria-live="polite"></div>
+                    <!-- Auth Tabs -->
+                    <div class="auth-tabs">
+                        <div class="auth-tab active" id="loginTab" onclick="toggleAuthMode('login')">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </div>
+                        <div class="auth-tab" id="signupTab" onclick="toggleAuthMode('signup')">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </div>
+                    </div>
+
+                    <!-- Login Section -->
+                    <div id="loginSection" class="auth-section">
+                        <form id="loginForm" class="auth-form" novalidate>
+                            <!-- Hospital Selection -->
+                            <div class="form-group">
+                                <label for="hospital" class="form-label">Healthcare Facility *</label>
+                                <select class="form-control" id="hospital" name="hospital" required>
+                                    <option value="">Select Your Healthcare Facility</option>
+                                    <option value="general_hospital_thiruvananthapuram">General Hospital, Thiruvananthapuram</option>
+                                    <option value="medical_college_kottayam">Government Medical College, Kottayam</option>
+                                    <option value="district_hospital_kochi">District Hospital, Kochi</option>
+                                    <option value="medical_college_kozhikode">Government Medical College, Kozhikode</option>
+                                    <option value="general_hospital_thrissur">General Hospital, Thrissur</option>
+                                    <option value="medical_college_alappuzha">Government Medical College, Alappuzha</option>
+                                    <option value="district_hospital_kannur">District Hospital, Kannur</option>
+                                    <option value="general_hospital_palakkad">General Hospital, Palakkad</option>
+                                    <option value="medical_college_malappuram">Government Medical College, Malappuram</option>
+                                    <option value="district_hospital_ernakulam">District Hospital, Ernakulam</option>
+                                    <option value="general_hospital_wayanad">General Hospital, Wayanad</option>
+                                    <option value="medical_college_kasargod">Government Medical College, Kasargod</option>
+                                    <option value="primary_health_center">Primary Health Center</option>
+                                    <option value="community_health_center">Community Health Center</option>
+                                    <option value="private_clinic">Private Clinic</option>
+                                    <option value="private_hospital">Private Hospital</option>
+                                </select>
+                                <div class="validation-message" id="hospitalValidation"></div>
+                            </div>
+
+                            <!-- Provider ID -->
+                            <div class="form-group">
+                                <label for="doctorId" class="form-label">Provider ID / License Number *</label>
+                                <input type="text" class="form-control" id="doctorId" name="doctorId" 
+                                       placeholder="Enter your medical license number or provider ID"
+                                       pattern="[A-Z0-9]{6,12}" 
+                                       title="Provider ID should be 6-12 characters, letters and numbers only"
+                                       required>
+                                <div class="validation-message" id="doctorIdValidation"></div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group">
+                                <label for="password" class="form-label">Password *</label>
+                                <div class="password-input-container">
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           placeholder="Enter your password" 
+                                           onkeypress="detectCapsLock(event)"
+                                           required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye" id="passwordEye"></i>
+                                    </button>
+                                </div>
+                                <div class="validation-message" id="passwordValidation"></div>
+                                <div class="caps-lock-warning" id="capsLockWarning" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i> Caps Lock is ON
+                                </div>
+                            </div>
+
+                            <!-- Remember Me -->
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                                    <span class="checkmark"></span>
+                                    Keep me logged in on this device
+                                </label>
+                            </div>
+
+                            <!-- Login Button -->
+                            <button type="submit" class="btn btn-primary btn-block login-btn">
+                                <span class="btn-text">Sign In</span>
+                                <span class="btn-loader" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Signing in...
+                                </span>
+                            </button>
+
+                            <!-- Forgot Password -->
+                            <div class="forgot-password-section">
+                                <a href="#" class="forgot-password-link" onclick="showForgotPassword()">
+                                    <i class="fas fa-key"></i> Forgot Password?
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Signup Section -->
+                    <div id="signupSection" class="auth-section" style="display: none;">
+                        <form id="signupForm" class="auth-form" novalidate>
+                            <!-- Hospital Selection -->
+                            <div class="form-group">
+                                <label for="signupHospital" class="form-label">Healthcare Facility *</label>
+                                <select class="form-control" id="signupHospital" name="hospital" required>
+                                    <option value="">Select Your Healthcare Facility</option>
+                                    <option value="general_hospital_thiruvananthapuram">General Hospital, Thiruvananthapuram</option>
+                                    <option value="medical_college_kottayam">Government Medical College, Kottayam</option>
+                                    <option value="district_hospital_kochi">District Hospital, Kochi</option>
+                                    <option value="medical_college_kozhikode">Government Medical College, Kozhikode</option>
+                                    <option value="general_hospital_thrissur">General Hospital, Thrissur</option>
+                                    <option value="medical_college_alappuzha">Government Medical College, Alappuzha</option>
+                                    <option value="district_hospital_kannur">District Hospital, Kannur</option>
+                                    <option value="general_hospital_palakkad">General Hospital, Palakkad</option>
+                                    <option value="medical_college_malappuram">Government Medical College, Malappuram</option>
+                                    <option value="district_hospital_ernakulam">District Hospital, Ernakulam</option>
+                                    <option value="general_hospital_wayanad">General Hospital, Wayanad</option>
+                                    <option value="medical_college_kasargod">Government Medical College, Kasargod</option>
+                                    <option value="primary_health_center">Primary Health Center</option>
+                                    <option value="community_health_center">Community Health Center</option>
+                                    <option value="private_clinic">Private Clinic</option>
+                                    <option value="private_hospital">Private Hospital</option>
+                                </select>
+                                <div class="validation-message" id="signupHospitalValidation"></div>
+                            </div>
+
+                            <!-- Role Selection -->
+                            <div class="form-group">
+                                <label for="role" class="form-label">Professional Role *</label>
+                                <select class="form-control" id="role" name="role" onchange="toggleDepartmentField()" required>
+                                    <option value="">Select Your Role</option>
+                                    <option value="doctor">Doctor</option>
+                                    <option value="health_worker">Health Worker</option>
+                                    <option value="nurse">Nurse</option>
+                                    <option value="pharmacist">Pharmacist</option>
+                                    <option value="lab_technician">Lab Technician</option>
+                                    <option value="radiologist">Radiologist</option>
+                                    <option value="admin">Administrator</option>
+                                </select>
+                                <div class="validation-message" id="roleValidation"></div>
+                            </div>
+
+                            <!-- Department Field (Conditional) -->
+                            <div class="form-group" id="departmentGroup" style="display: none;">
+                                <label for="department" class="form-label">Medical Department *</label>
+                                <select class="form-control" id="department" name="department">
+                                    <option value="">Select Department</option>
+                                    <option value="general_medicine">General Medicine</option>
+                                    <option value="cardiology">Cardiology</option>
+                                    <option value="neurology">Neurology</option>
+                                    <option value="orthopedics">Orthopedics</option>
+                                    <option value="pediatrics">Pediatrics</option>
+                                    <option value="gynecology">Gynecology & Obstetrics</option>
+                                    <option value="surgery">General Surgery</option>
+                                    <option value="dermatology">Dermatology</option>
+                                    <option value="psychiatry">Psychiatry</option>
+                                    <option value="radiology">Radiology</option>
+                                    <option value="pathology">Pathology</option>
+                                    <option value="anesthesiology">Anesthesiology</option>
+                                    <option value="emergency">Emergency Medicine</option>
+                                    <option value="ent">ENT (Otolaryngology)</option>
+                                    <option value="ophthalmology">Ophthalmology</option>
+                                    <option value="urology">Urology</option>
+                                    <option value="oncology">Oncology</option>
+                                    <option value="infectious_disease">Infectious Diseases</option>
+                                    <option value="pulmonology">Pulmonology</option>
+                                    <option value="nephrology">Nephrology</option>
+                                </select>
+                                <div class="validation-message" id="departmentValidation"></div>
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="firstName" class="form-label">First Name *</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                        <div class="validation-message" id="firstNameValidation"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lastName" class="form-label">Last Name *</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                        <div class="validation-message" id="lastNameValidation"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Provider ID -->
+                            <div class="form-group">
+                                <label for="signupProviderId" class="form-label">Medical License/Provider ID *</label>
+                                <input type="text" class="form-control" id="signupProviderId" name="providerId" 
+                                       pattern="[A-Z0-9]{6,12}" required>
+                                <small class="form-text text-muted">Enter your medical license number or provider ID</small>
+                                <div class="validation-message" id="signupProviderIdValidation"></div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label for="email" class="form-label">Professional Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <small class="form-text text-muted">Use your official healthcare facility email</small>
+                                <div class="validation-message" id="emailValidation"></div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Contact Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                                <div class="validation-message" id="phoneValidation"></div>
+                            </div>
+
+                            <!-- Password Creation -->
+                            <div class="form-group">
+                                <label for="newPassword" class="form-label">Create Password *</label>
+                                <div class="password-input-container">
+                                    <input type="password" class="form-control" id="newPassword" name="password" 
+                                           onkeyup="validatePassword(this.value)" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-requirements" id="passwordRequirements">
+                                    <small class="form-text">Password must contain:</small>
+                                    <ul class="requirements-list">
+                                        <li id="req-length">At least 8 characters</li>
+                                        <li id="req-uppercase">One uppercase letter</li>
+                                        <li id="req-lowercase">One lowercase letter</li>
+                                        <li id="req-number">One number</li>
+                                        <li id="req-special">One special character</li>
+                                    </ul>
+                                </div>
+                                <div class="validation-message" id="newPasswordValidation"></div>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="form-group">
+                                <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                                <div class="password-input-container">
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                                           onkeyup="checkPasswordMatch()" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="validation-message" id="confirmPasswordValidation"></div>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                                    <span class="checkmark"></span>
+                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                </label>
+                                <div class="validation-message" id="agreeTermsValidation"></div>
+                            </div>
+
+                            <!-- HIPAA Compliance -->
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="hipaaCompliance" name="hipaaCompliance" required>
+                                    <span class="checkmark"></span>
+                                    I acknowledge HIPAA compliance requirements and data protection policies
+                                </label>
+                                <div class="validation-message" id="hipaaComplianceValidation"></div>
+                            </div>
+
+                            <!-- Sign-up Button -->
+                            <button type="submit" class="btn btn-primary btn-block signup-btn">
+                                <span class="btn-text">Create Account</span>
+                                <span class="btn-loader" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Creating account...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div class="security-notice mt-4">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-shield-alt text-primary-brand me-2 mt-1"></i>
+                            <div>
+                                <small class="text-muted">
+                                    <strong>Security Notice:</strong> This system uses end-to-end encryption and complies with 
+                                    healthcare data protection standards. All activities are logged for audit purposes.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="../../js/main.js"></script>
-    <script>
-      const form = document.getElementById('loginForm');
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (!form.checkValidity()) { form.classList.add('was-validated'); App.showToast('Please complete the form', 'error'); return; }
-        const fd = new FormData(form);
-        localStorage.setItem(App.STORAGE_KEYS.providerRole, fd.get('role'));
-        App.showToast('Login successful');
-        setTimeout(()=>{ window.location.href = './dashboard.html'; }, 700);
-      });
-    </script>
-  </body>
-  </html>
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">
+                        <i class="fas fa-key me-2"></i>Reset Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="forgotPasswordForm" novalidate>
+                        <p class="text-muted">Enter your Provider ID and registered email to receive password reset instructions.</p>
+                        
+                        <div class="form-group">
+                            <label for="resetProviderId" class="form-label">Provider ID</label>
+                            <input type="text" class="form-control" id="resetProviderId" required>
+                            <div class="validation-message" id="resetProviderIdValidation"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="resetEmail" class="form-label">Registered Email</label>
+                            <input type="email" class="form-control" id="resetEmail" required>
+                            <div class="validation-message" id="resetEmailValidation"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-paper-plane me-2"></i>Send Reset Link
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Toast Container -->
+    <div class="app-toast" role="status" aria-live="polite"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="../../js/main.js"></script>
+    <script src="../../js/auth.js"></script>
+</body>
+</html>
