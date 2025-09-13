@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/mobile.css" />
+  </head>
+  <body>
+    <div class="container py-3" style="max-width: 640px;">
+      <a href="./language-select.html" class="text-decoration-none small">&larr; Back</a>
+      <h1 id="titleLogin" class="h4 fw-bold mt-2">Login</h1>
+      <p id="subtitleLogin" class="text-muted small">Enter your mobile number to continue</p>
+
+      <form id="loginForm" novalidate class="card border-0 shadow-sm p-3 mobile-card">
+        <div class="row g-3">
+          <div class="col-12">
+            <label id="labelPhone" class="form-label">Mobile Number</label>
+            <input id="inputPhone" type="tel" class="form-control" name="phone" pattern="[0-9]{10}" placeholder="10-digit number" maxlength="10" required />
+            <div id="errorPhone" class="invalid-feedback">Enter a valid 10-digit mobile number</div>
+          </div>
+          <div class="col-12">
+            <button id="btnSendOTP" type="button" class="btn btn-outline-primary w-100">Send OTP</button>
+          </div>
+          <div class="col-12" id="otpSection" style="display: none;">
+            <label id="labelOTP" class="form-label">Enter OTP</label>
+            <input id="inputOTP" type="text" class="form-control" name="otp" pattern="[0-9]{6}" placeholder="6-digit OTP" maxlength="6" required />
+            <div id="errorOTP" class="invalid-feedback">Enter the 6-digit OTP</div>
+          </div>
+          <div class="col-12" id="loginSection" style="display: none;">
+            <button id="btnLogin" type="button" class="btn btn-success btn-lg w-100">Login</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="msg" class="mt-3"></div>
+      <div class="app-toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/main.js"></script>
+    <script>
+      let generatedOTP = null;
+      let phoneNumber = null;
+
+      function sendOTP() {
+        const phone = document.getElementById('inputPhone').value.trim();
+        
+        // Validate phone number
+        if (!phone) {
+          document.getElementById('msg').innerHTML = '<div class="alert alert-danger">Please enter your mobile number.</div>';
+          return;
+        }
+        
+        if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+          document.getElementById('msg').innerHTML = '<div class="alert alert-danger">Enter a valid 10-digit mobile number.</div>';
+          return;
+        }
+
+        // Check if user exists
+        const user = UserManager.findUserByPhone(phone);
+        if (!user) {
+          document.getElementById('msg').innerHTML = '<div class="alert alert-warning">No account found with this mobile number. Please register first.</div>';
+          return;
+        }
+
+        // Generate demo OTP
+        generatedOTP = "123456";
+        phoneNumber = phone;
+        
+        // Show OTP section
+        document.getElementById('otpSection').style.display = 'block';
+        document.getElementById('loginSection').style.display = 'block';
+        
+        // Show success message
+        document.getElementById('msg').innerHTML = '<div class="alert alert-success">OTP sent! Please check your phone.</div>';
+        
+        // Demo OTP popup
+        alert(`Demo OTP sent: 123456\n\nWelcome back, ${user.name}!\nNote: In a real application, this would be sent via SMS to +91 ${phone}`);
+        
+        // Focus on OTP input
+        document.getElementById('inputOTP').focus();
+      }
+
+      function login() {
+        const otp = document.getElementById('inputOTP').value.trim();
+        
+        // Validate OTP
+        if (!otp) {
+          document.getElementById('msg').innerHTML = '<div class="alert alert-danger">Please enter the OTP.</div>';
+          return;
+        }
+        
+        if (!generatedOTP) {
+          document.getElementById('msg').innerHTML = '<div class="alert alert-danger">OTP not sent yet. Please send OTP first.</div>';
+          return;
+        }
+        
+        // For prototype: accept any 6-digit OTP
+        if (otp.length === 6 && /^\d{6}$/.test(otp)) {
+          // Find the user again to get full data
+          const user = UserManager.findUserByPhone(phoneNumber);
+          
+          if (user) {
+            // Set current user in UserManager
+            UserManager.setCurrentUser(user);
+            
+            document.getElementById('msg').innerHTML = `<div class="alert alert-success">Welcome back, ${user.name}! Redirecting...</div>`;
+            
+            // Redirect to health ID page
+            setTimeout(() => {
+              window.location.href = './health-id.html';
+            }, 1500);
+          } else {
+            document.getElementById('msg').innerHTML = '<div class="alert alert-danger">User not found. Please try again.</div>';
+          }
+        } else {
+          document.getElementById('msg').innerHTML = '<div class="alert alert-danger">Please enter a valid 6-digit OTP.</div>';
+          document.getElementById('inputOTP').value = '';
+          document.getElementById('inputOTP').focus();
+        }
+      }
+
+      // Event listeners
+      document.getElementById('btnSendOTP').addEventListener('click', sendOTP);
+      document.getElementById('btnLogin').addEventListener('click', login);
+
+      // Allow Enter key to trigger actions
+      document.getElementById('inputPhone').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          sendOTP();
+        }
+      });
+
+      document.getElementById('inputOTP').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          login();
+        }
+      });
+
+      // Auto-format phone number (only allow digits)
+      document.getElementById('inputPhone').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+
+      // Auto-format OTP (only allow digits)
+      document.getElementById('inputOTP').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+
+      // Apply language translations
+      (function applyLanguage() {
+        const lang = localStorage.getItem(App.STORAGE_KEYS.language) || 'en';
+        const t = {
+          title: { hi: 'लॉगिन', bn: 'লগইন', ml: 'ലോഗിൻ', or: 'ଲଗଇନ୍', ta: 'உள்நுழைவு' },
+          subtitle: { hi: 'जारी रखने के लिए अपना मोबाइल नंबर दर्ज करें', bn: 'চালিয়ে যেতে আপনার মোবাইল নম্বর লিখুন', ml: 'തുടരാൻ നിങ്ങളുടെ മൊബൈൽ നമ്പർ നൽകുക', or: 'ଚାଲୁ ରଖିବା ପାଇଁ ଆପଣଙ୍କର ମୋବାଇଲ୍ ନମ୍ବର ଦିଅନ୍ତୁ', ta: 'தொடர உங்கள் மொபைல் எண்ணை உள்ளிடவும்' },
+          phone: { hi: 'मोबाइल नंबर', bn: 'মোবাইল নম্বর', ml: 'മൊബൈൽ നമ്പർ', or: 'ମୋବାଇଲ୍ ନମ୍ବର', ta: 'மொபைல் எண்' },
+          otp: { hi: 'ओटीपी दर्ज करें', bn: 'ওটিপি লিখুন', ml: 'OTP നൽകുക', or: 'OTP ଦିଅନ୍ତୁ', ta: 'OTP உள்ளிடவும்' },
+          sendOTP: { hi: 'ओटीपी भेजें', bn: 'ওটিপি পাঠান', ml: 'OTP അയയ്ക്കുക', or: 'OTP ପଠାନ୍ତୁ', ta: 'OTP அனுப்பவும்' },
+          login: { hi: 'लॉगिन करें', bn: 'লগইন করুন', ml: 'ലോഗിൻ ചെയ്യുക', or: 'ଲଗଇନ୍ କରନ୍ତୁ', ta: 'உள்நுழையவும்' },
+          phPhone: { hi: '10-अंकों की संख्या', bn: '১০-সংখ্যার নম্বর', ml: '10 അക്ക സംഖ്യ', or: '10-ଅଙ୍କୀୟ ସଂଖ୍ୟା', ta: '10 இலக்க எண்' },
+          phOTP: { hi: '6-अंकों का ओटीपी', bn: '৬-সংখ্যার ওটিপি', ml: '6 അക്ക OTP', or: '6-ଅଙ୍କୀୟ OTP', ta: '6 இலக்க OTP' }
+        };
+        
+        function pair(en, key) {
+          if (lang === 'en') return en;
+          const map = t[key] || {};
+          const local = map[lang];
+          return local ? `${en} | ${local}` : en;
+        }
+        
+        document.getElementById('titleLogin').textContent = pair('Login', 'title');
+        document.getElementById('subtitleLogin').textContent = pair('Enter your mobile number to continue', 'subtitle');
+        document.getElementById('labelPhone').textContent = pair('Mobile Number', 'phone');
+        document.getElementById('labelOTP').textContent = pair('Enter OTP', 'otp');
+        document.getElementById('btnSendOTP').textContent = pair('Send OTP', 'sendOTP');
+        document.getElementById('btnLogin').textContent = pair('Login', 'login');
+        document.getElementById('inputPhone').setAttribute('placeholder', pair('10-digit number', 'phPhone'));
+        document.getElementById('inputOTP').setAttribute('placeholder', pair('6-digit OTP', 'phOTP'));
+      })();
+    </script>
+  </body>
+</html>

@@ -22,8 +22,9 @@
         <button class="language-btn tap-target" data-lang="ta">Tamil (தமிழ்)</button>
       </div>
 
-      <div class="d-grid mt-4">
-        <a id="continueBtn" class="btn btn-success btn-lg disabled" href="#">Continue</a>
+      <div class="d-grid gap-2 mt-4">
+        <a id="registerBtn" class="btn btn-success btn-lg disabled" href="#">Register New Worker</a>
+        <a id="loginBtn" class="btn btn-outline-success btn-lg disabled" href="#">Login Existing Worker</a>
       </div>
 
       <div class="app-toast" role="status" aria-live="polite"></div>
@@ -33,7 +34,8 @@
     <script src="../../js/main.js"></script>
     <script>
       const buttons = document.querySelectorAll('.language-btn');
-      const continueBtn = document.getElementById('continueBtn');
+      const registerBtn = document.getElementById('registerBtn');
+      const loginBtn = document.getElementById('loginBtn');
       let selected = null;
 
       buttons.forEach(btn => {
@@ -42,15 +44,22 @@
           btn.classList.add('active');
           selected = btn.getAttribute('data-lang');
           localStorage.setItem(App.STORAGE_KEYS.language, selected);
-          continueBtn.classList.remove('disabled');
+          registerBtn.classList.remove('disabled');
+          loginBtn.classList.remove('disabled');
         });
       });
 
-      continueBtn.addEventListener('click', (e) => {
+      registerBtn.addEventListener('click', (e) => {
         if (!selected) { e.preventDefault(); App.showToast('Please select a language', 'error'); return; }
-        continueBtn.setAttribute('href', './register.html');
+        registerBtn.setAttribute('href', './register.html');
+      });
+
+      loginBtn.addEventListener('click', (e) => {
+        if (!selected) { e.preventDefault(); App.showToast('Please select a language', 'error'); return; }
+        loginBtn.setAttribute('href', './login.html');
       });
     </script>
   </body>
   </html>
+
 
