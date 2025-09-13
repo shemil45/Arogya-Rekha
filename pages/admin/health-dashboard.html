@@ -8,6 +8,78 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="../../css/main.css" />
     <link rel="stylesheet" href="../../css/dashboard.css" />
+    <style>
+      .dashboard-section {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .btn-group .btn {
+        transition: all 0.3s ease;
+      }
+      
+      .card-elevated {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: none;
+        transition: box-shadow 0.3s ease;
+      }
+      
+      .card-elevated:hover {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+      }
+      
+      .map-container {
+        height: 500px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .stat-card .display-6, .stat-card .h3 {
+        color: white !important;
+      }
+      
+      .nav-tabs .nav-link {
+        border-radius: 8px 8px 0 0;
+        margin-right: 5px;
+      }
+      
+      .nav-tabs .nav-link.active {
+        background-color: #1B4F72;
+        border-color: #1B4F72;
+        color: white;
+      }
+      
+      .custom-marker {
+        background: transparent !important;
+        border: none !important;
+      }
+      
+      .leaflet-popup-content {
+        margin: 8px 12px;
+        line-height: 1.4;
+      }
+      
+      .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      
+      .leaflet-popup-tip {
+        background: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background:#1B4F72;">
@@ -18,56 +90,191 @@
     </nav>
 
     <div class="container py-3">
-      <div class="row g-3">
-        <div class="col-12 col-lg-8">
-          <div class="card card-elevated p-3">
-            <div class="d-flex justify-content-between align-items-center">
-              <h2 class="h5 m-0">Kerala Disease Hotspots</h2>
-              <select id="diseaseFilter" class="form-select form-select-sm" style="max-width:200px;">
-                <option value="dengue">Dengue</option>
-                <option value="malaria">Malaria</option>
-                <option value="tb">TB</option>
-                <option value="covid">COVID-19</option>
-              </select>
-            </div>
-            <div id="keralaMap" class="map-container mt-2"></div>
-          </div>
-        </div>
-        <div class="col-12 col-lg-4">
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="card card-elevated p-3 text-center">
-                <div class="small text-muted">Active Cases</div>
-                <div class="display-6" id="activeCases">—</div>
+      <!-- Navigation Tabs -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card card-elevated">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 m-0">🏥 Kerala Health Dashboard</h2>
+                <div class="d-flex gap-2">
+                  <select id="diseaseFilter" class="form-select form-select-sm" style="max-width:200px;">
+                    <option value="dengue">🦟 Dengue</option>
+                    <option value="malaria">🦟 Malaria</option>
+                    <option value="tb">🫁 TB</option>
+                    <option value="covid">🦠 COVID-19</option>
+                  </select>
+                  <button id="refreshBtn" class="btn btn-outline-primary btn-sm">🔄 Refresh</button>
+                </div>
               </div>
-            </div>
-            <div class="col-6">
-              <div class="card card-elevated p-3 text-center">
-                <div class="small text-muted">New Cases</div>
-                <div class="h3" id="newCases">—</div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="card card-elevated p-3 text-center">
-                <div class="small text-muted">High-Risk Areas</div>
-                <div class="h3" id="riskAreas">—</div>
+              
+              <!-- Navigation Buttons -->
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-primary active" id="overviewBtn" onclick="showSection('overview')">
+                  📊 Overview
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="mapBtn" onclick="showSection('map')">
+                  🗺️ Map View
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="graphBtn" onclick="showSection('graph')">
+                  📈 Trends
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="alertsBtn" onclick="showSection('alerts')">
+                  🚨 Alerts
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="reportsBtn" onclick="showSection('reports')">
+                  📋 Reports
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="row g-3 mt-1">
-        <div class="col-12 col-lg-6">
-          <div class="card card-elevated p-3">
-            <h2 class="h6">Weekly Trends</h2>
-            <canvas id="trendChart" height="140"></canvas>
+      <!-- Overview Section -->
+      <div id="overviewSection" class="dashboard-section">
+        <div class="row g-3">
+          <!-- Statistics Cards -->
+          <div class="col-12 col-md-4">
+            <div class="card card-elevated p-3 text-center h-100">
+              <div class="small text-muted">📊 Active Cases</div>
+              <div class="display-6 text-primary" id="activeCases">—</div>
+              <small class="text-muted" id="activeCasesChange">+0% from last week</small>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card card-elevated p-3 text-center h-100">
+              <div class="small text-muted">🆕 New Cases (24h)</div>
+              <div class="h3 text-success" id="newCases">—</div>
+              <small class="text-muted" id="newCasesChange">+0% from yesterday</small>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card card-elevated p-3 text-center h-100">
+              <div class="small text-muted">⚠️ High-Risk Areas</div>
+              <div class="h3 text-warning" id="riskAreas">—</div>
+              <small class="text-muted" id="riskAreasChange">0 districts on alert</small>
+            </div>
           </div>
         </div>
-        <div class="col-12 col-lg-6">
-          <div class="card card-elevated p-3">
-            <h2 class="h6">District Breakdown</h2>
-            <div id="districtTable"></div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-12 col-lg-6">
+            <div class="card card-elevated p-3">
+              <h3 class="h6 mb-3">🏘️ Top Districts</h3>
+              <div id="districtTable"></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6">
+            <div class="card card-elevated p-3">
+              <h3 class="h6 mb-3">🚨 Recent Alerts</h3>
+              <div id="recentAlerts">
+                <div class="alert alert-success">
+                  ✅ No critical alerts at this time
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map Section -->
+      <div id="mapSection" class="dashboard-section" style="display: none;">
+        <div class="row">
+          <div class="col-12">
+            <div class="card card-elevated p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h6 mb-0">🗺️ Kerala Disease Hotspots</h3>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" onclick="toggleMapLegend()">📋 Legend</button>
+                  <button class="btn btn-outline-success btn-sm" onclick="fitMapToMarkers()">🎯 Fit View</button>
+                </div>
+              </div>
+              <div id="keralaMap" class="map-container"></div>
+              
+              <!-- Map Legend -->
+              <div id="mapLegend" class="mt-3" style="display: none;">
+                <div class="card">
+                  <div class="card-body p-3">
+                    <h6 class="card-title">Risk Level Legend</h6>
+                    <div class="row g-2">
+                      <div class="col-6 col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle me-2" style="width: 20px; height: 20px; background: #dc3545;"></div>
+                          <small>Critical (≥40)</small>
+                        </div>
+                      </div>
+                      <div class="col-6 col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle me-2" style="width: 20px; height: 20px; background: #E67E22;"></div>
+                          <small>High (20-39)</small>
+                        </div>
+                      </div>
+                      <div class="col-6 col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle me-2" style="width: 20px; height: 20px; background: #f39c12;"></div>
+                          <small>Medium (10-19)</small>
+                        </div>
+                      </div>
+                      <div class="col-6 col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle me-2" style="width: 20px; height: 20px; background: #27AE60;"></div>
+                          <small>Low (<10)</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph Section -->
+      <div id="graphSection" class="dashboard-section" style="display: none;">
+        <div class="row">
+          <div class="col-12">
+            <div class="card card-elevated p-3">
+              <h3 class="h6 mb-3">📈 Disease Trends</h3>
+              <canvas id="trendChart" height="300"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Section -->
+      <div id="alertsSection" class="dashboard-section" style="display: none;">
+        <div class="row">
+          <div class="col-12">
+            <div class="card card-elevated p-3">
+              <h3 class="h6 mb-3">🚨 Health Alerts & Notifications</h3>
+              <div id="alertsContainer" class="mt-3">
+                <!-- Alerts will be populated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports Section -->
+      <div id="reportsSection" class="dashboard-section" style="display: none;">
+        <div class="row g-3">
+          <div class="col-12 col-lg-8">
+            <div class="card card-elevated p-3">
+              <h3 class="h6 mb-3">📋 District Reports</h3>
+              <div id="districtTable"></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="card card-elevated p-3">
+              <h3 class="h6 mb-3">📊 Export Options</h3>
+              <div class="d-grid gap-2">
+                <button id="exportBtn" class="btn btn-success">📄 Export Report</button>
+                <button class="btn btn-outline-primary" onclick="exportToPDF()">📑 Export as PDF</button>
+                <button class="btn btn-outline-info" onclick="exportToExcel()">📊 Export as Excel</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

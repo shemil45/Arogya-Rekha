@@ -128,6 +128,16 @@
 
     <script src="../../js/main.js"></script>
     <script>
+      // Calculate DOB from age (approximate)
+      function calculateDOB(age) {
+        const today = new Date();
+        const birthYear = today.getFullYear() - age;
+        // Use a random month and day for variety
+        const month = Math.floor(Math.random() * 12) + 1;
+        const day = Math.floor(Math.random() * 28) + 1; // Use 28 to avoid invalid dates
+        return `${birthYear}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      }
+
       const form = document.getElementById('regForm');
       form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -148,6 +158,15 @@
         }
 
         const fd = new FormData(form);
+        const phoneNumber = fd.get('phone').trim();
+        
+        // Check if user already exists
+        const existingUser = UserManager.findUserByPhone(phoneNumber);
+        if (existingUser) {
+          App.showToast('An account with this mobile number already exists. Please login instead.', 'error');
+          return;
+        }
+        
         const worker = {
           healthId: App.generateHealthId(),
           name: fd.get('name').trim(),
@@ -155,14 +174,28 @@
           gender: fd.get('gender'),
           bloodGroup: fd.get('bloodGroup'),
           homeState: fd.get('homeState'),
-          phone: '+91 ' + fd.get('phone'),
+          phone: phoneNumber, // Store without +91 prefix for easier matching
+          dob: calculateDOB(Number(fd.get('age'))), // Calculate DOB from age
           currentLocation: { district: fd.get('district') },
           history: [],
-          records: []
+          records: [],
+          registeredAt: new Date().toISOString().split('T')[0] // Today's date
         };
-        App.saveWorker(worker);
+        
+        // Save to UserManager
+        UserManager.addUser(worker);
+        
+        // Set as current user
+        UserManager.setCurrentUser(worker);
+        
+        // Also save to App for backward compatibility
+        App.saveWorker({
+          ...worker,
+          phone: '+91 ' + worker.phone // Add +91 prefix for compatibility
+        });
         App.setSelectedWorker(worker.healthId);
-        App.showToast('Health ID generated');
+        
+        App.showToast(`Welcome ${worker.name}! Health ID generated successfully.`);
         setTimeout(() => { window.location.href = './health-id.html'; }, 800);
       });
       

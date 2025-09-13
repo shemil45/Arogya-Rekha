@@ -5,11 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Select Language | Worker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/main.css" />
     <link rel="stylesheet" href="../../css/mobile.css" />
+    <link rel="stylesheet" href="health-id.css" />
   </head>
   <body>
-    <div class="container py-4" style="max-width: 560px;">
+    <!-- Header Section -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <div class="header-title">
+            <h1>Select Language</h1>
+            <p>Choose your preferred language</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <!-- Empty for now, can add logout or other actions if needed -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container py-4" style="max-width: 560px; padding-top: 20px;">
       <h1 class="h4 text-center fw-bold mb-3">ഭാഷ തിരഞ്ഞെടുക്കുക | भाषा चुनें | ভাষা নির্বাচন করুন</h1>
       <p class="text-center text-muted small">Choose your preferred language</p>
 
@@ -22,8 +42,9 @@
         <button class="language-btn tap-target" data-lang="ta">Tamil (தமிழ்)</button>
       </div>
 
-      <div class="d-grid mt-4">
-        <a id="continueBtn" class="btn btn-success btn-lg disabled" href="#">Continue</a>
+      <div class="d-grid gap-2 mt-4">
+        <a id="registerBtn" class="btn btn-success btn-lg disabled" href="#">Register New Worker</a>
+        <a id="loginBtn" class="btn btn-outline-success btn-lg disabled" href="#">Login Existing Worker</a>
       </div>
 
       <div class="app-toast" role="status" aria-live="polite"></div>
@@ -33,7 +54,8 @@
     <script src="../../js/main.js"></script>
     <script>
       const buttons = document.querySelectorAll('.language-btn');
-      const continueBtn = document.getElementById('continueBtn');
+      const registerBtn = document.getElementById('registerBtn');
+      const loginBtn = document.getElementById('loginBtn');
       let selected = null;
 
       buttons.forEach(btn => {
@@ -42,15 +64,22 @@
           btn.classList.add('active');
           selected = btn.getAttribute('data-lang');
           localStorage.setItem(App.STORAGE_KEYS.language, selected);
-          continueBtn.classList.remove('disabled');
+          registerBtn.classList.remove('disabled');
+          loginBtn.classList.remove('disabled');
         });
       });
 
-      continueBtn.addEventListener('click', (e) => {
+      registerBtn.addEventListener('click', (e) => {
         if (!selected) { e.preventDefault(); App.showToast('Please select a language', 'error'); return; }
-        continueBtn.setAttribute('href', './register.html');
+        registerBtn.setAttribute('href', './register.html');
+      });
+
+      loginBtn.addEventListener('click', (e) => {
+        if (!selected) { e.preventDefault(); App.showToast('Please select a language', 'error'); return; }
+        loginBtn.setAttribute('href', './login.html');
       });
     </script>
   </body>
   </html>
+
 
