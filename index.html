@@ -27,6 +27,118 @@
 
     <link rel="stylesheet" href="./css/main.css" />
     <link rel="stylesheet" href="./css/mobile.css" />
+    
+    <style>
+      /* Dark Theme Styles */
+      [data-theme="dark"] {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --bg-card: #3a3a3a;
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0b0;
+        --border-color: #4a4a4a;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+      
+      [data-theme="dark"] body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+      }
+      
+      [data-theme="dark"] .bg-light {
+        background-color: var(--bg-secondary) !important;
+      }
+      
+      [data-theme="dark"] .card {
+        background-color: var(--bg-card);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+      }
+      
+      [data-theme="dark"] .navbar {
+        background-color: var(--bg-secondary) !important;
+      }
+      
+      [data-theme="dark"] .btn-outline-light {
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+      
+      [data-theme="dark"] .btn-outline-light:hover {
+        background-color: var(--border-color);
+        color: var(--text-primary);
+      }
+      
+      [data-theme="dark"] .text-muted {
+        color: var(--text-secondary) !important;
+      }
+      
+      [data-theme="dark"] .border-top {
+        border-color: var(--border-color) !important;
+      }
+      
+      [data-theme="dark"] .mini-card {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+      }
+      
+      [data-theme="dark"] .hero-card {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+      }
+      
+      /* Light Theme (Default) */
+      [data-theme="light"] {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-card: #ffffff;
+        --text-primary: #212529;
+        --text-secondary: #6c757d;
+        --border-color: #dee2e6;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Custom Styles for Better Layout */
+      .text-primary-brand {
+        color: #1B4F72 !important;
+      }
+      
+      .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+      
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+      }
+      
+      .btn {
+        transition: all 0.2s ease-in-out;
+      }
+      
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      
+      .navbar-brand {
+        font-size: 1.5rem;
+      }
+      
+      .display-4 {
+        font-size: 3rem;
+      }
+      
+      @media (max-width: 768px) {
+        .display-4 {
+          font-size: 2.5rem;
+        }
+        
+        .btn-lg {
+          font-size: 1rem;
+          padding: 0.75rem 1.5rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Header / Nav -->
@@ -40,67 +152,152 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navMenu">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="./pages/worker/language-select.html">Worker</a></li>
-            <li class="nav-item"><a class="nav-link" href="./pages/provider/login.html">Healthcare Provider</a></li>
-            <li class="nav-item"><a class="nav-link" href="./pages/admin/health-dashboard.html">Health Officials</a></li>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center" href="./pages/worker/language-select.html">
+                <i class="bi bi-people-fill me-1"></i> Workers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center" href="./pages/provider/login.html">
+                <i class="bi bi-hospital me-1"></i> Providers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center" href="./pages/admin/health-dashboard.html">
+                <i class="bi bi-bar-chart-line me-1"></i> Officials
+              </a>
+            </li>
+            <li class="nav-item ms-2">
+              <button class="btn btn-outline-light btn-sm" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span> <span id="themeText">Dark</span>
+              </button>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section class="py-5 bg-light">
       <div class="container">
-        <div class="row align-items-center g-4">
-          <div class="col-12 col-lg-6">
-            <h1 class="display-6 fw-bold text-primary-brand">Arogya Rekha</h1>
-            <p class="lead text-secondary">A Digital Health Record</p>
-            <div class="d-grid d-md-flex gap-3 mt-4">
-              <a class="btn btn-success btn-lg" href="./pages/worker/language-select.html">
-                <i class="bi bi-people-fill me-1"></i> Worker Registration
-              </a>
-              <a class="btn btn-outline-primary btn-lg" href="./pages/provider/login.html">
-                <i class="bi bi-hospital me-1"></i> Healthcare Provider
-              </a>
-              <a class="btn btn-outline-warning btn-lg" href="./pages/admin/health-dashboard.html">
-                <i class="bi bi-bar-chart-line me-1"></i> Health Officials
-              </a>
-            </div>
+        <div class="row justify-content-center text-center mb-5">
+          <div class="col-lg-8">
+            <h1 class="display-4 fw-bold text-primary-brand mb-3">🏥 Arogya Rekha</h1>
+            <p class="lead text-secondary mb-4">Digital Health Record System for Migrant Workers in Kerala</p>
+            <p class="text-muted">A comprehensive healthcare solution connecting workers, providers, and health officials</p>
           </div>
-          <div class="col-12 col-lg-6 text-center">
-            <div class="hero-card card border-0 shadow-sm">
-              <div class="card-body p-4">
-                <div class="row g-3">
-                  <div class="col-6">
-                    <div class="mini-card card h-100 border-0" style="background:#E8F4FD;">
-                      <div class="card-body">
-                        <div class="fs-2 text-primary-brand"><i class="bi bi-qr-code"></i></div>
-                        <div class="fw-semibold mt-2">QR Health ID</div>
-                        <div class="small text-muted">Portable records</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Access Section -->
+    <section class="py-5">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <div class="col-lg-10">
+            <h2 class="text-center fw-bold mb-4">Choose Your Access Portal</h2>
+            <div class="row g-4">
+              <!-- Worker Portal -->
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center">
+                  <div class="card-body p-4">
+                    <div class="mb-3">
+                      <div class="fs-1 text-success">
+                        <i class="bi bi-people-fill"></i>
                       </div>
                     </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="mini-card card h-100 border-0" style="background:#EAF7F0;">
-                      <div class="card-body">
-                        <div class="fs-2 text-success"><i class="bi bi-clipboard2-pulse"></i></div>
-                        <div class="fw-semibold mt-2">Provider Portal</div>
-                        <div class="small text-muted">Faster care</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <div class="mini-card card h-100 border-0" style="background:#FFF3E8;">
-                      <div class="card-body">
-                        <div class="fs-2 text-accent"><i class="bi bi-map"></i></div>
-                        <div class="fw-semibold mt-2">Public Health Dashboard</div>
-                        <div class="small text-muted">Real-time hotspots</div>
-                      </div>
+                    <h4 class="card-title fw-bold">👷 Migrant Workers</h4>
+                    <p class="card-text text-muted">Register for your digital health ID and access your medical records</p>
+                    <div class="mt-4">
+                      <a href="./pages/worker/language-select.html" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-person-plus me-2"></i>Get Started
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- Healthcare Provider Portal -->
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center">
+                  <div class="card-body p-4">
+                    <div class="mb-3">
+                      <div class="fs-1 text-primary">
+                        <i class="bi bi-hospital"></i>
+                      </div>
+                    </div>
+                    <h4 class="card-title fw-bold">🏥 Healthcare Providers</h4>
+                    <p class="card-text text-muted">Access patient records, update medical history, and provide better care</p>
+                    <div class="mt-4">
+                      <a href="./pages/provider/login.html" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Health Officials Portal -->
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center">
+                  <div class="card-body p-4">
+                    <div class="mb-3">
+                      <div class="fs-1 text-warning">
+                        <i class="bi bi-bar-chart-line"></i>
+                      </div>
+                    </div>
+                    <h4 class="card-title fw-bold">📊 Health Officials</h4>
+                    <p class="card-text text-muted">Monitor disease trends, track outbreaks, and manage public health data</p>
+                    <div class="mt-4">
+                      <a href="./pages/admin/health-dashboard.html" class="btn btn-warning btn-lg w-100">
+                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <div class="col-lg-8 text-center">
+            <h2 class="fw-bold mb-3">Key Features</h2>
+            <p class="text-muted">Comprehensive healthcare management for migrant workers</p>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="fs-1 text-primary mb-3">
+                <i class="bi bi-qr-code"></i>
+              </div>
+              <h5 class="fw-bold">QR Health ID</h5>
+              <p class="text-muted small">Portable digital health records accessible via QR code</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="fs-1 text-success mb-3">
+                <i class="bi bi-clipboard2-pulse"></i>
+              </div>
+              <h5 class="fw-bold">Provider Portal</h5>
+              <p class="text-muted small">Streamlined access to patient records for faster care</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="fs-1 text-warning mb-3">
+                <i class="bi bi-map"></i>
+              </div>
+              <h5 class="fw-bold">Health Dashboard</h5>
+              <p class="text-muted small">Real-time disease monitoring and outbreak tracking</p>
             </div>
           </div>
         </div>
@@ -133,9 +330,56 @@
 
     <script src="./js/data.js"></script>
     <script src="./js/main.js"></script>
+    
+    <script>
+      // Theme toggle functionality
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Set new theme
+        document.documentElement.setAttribute('data-theme', newTheme);
+        
+        // Update button text and icon
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        
+        if (newTheme === 'dark') {
+          themeIcon.textContent = '☀️';
+          themeText.textContent = 'Light';
+        } else {
+          themeIcon.textContent = '🌙';
+          themeText.textContent = 'Dark';
+        }
+        
+        // Save theme preference
+        localStorage.setItem('theme', newTheme);
+      }
+      
+      // Initialize theme on page load
+      function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Update button to show current theme
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        
+        if (savedTheme === 'dark') {
+          themeIcon.textContent = '☀️';
+          themeText.textContent = 'Light';
+        } else {
+          themeIcon.textContent = '🌙';
+          themeText.textContent = 'Dark';
+        }
+      }
+      
+      // Initialize theme when page loads
+      document.addEventListener('DOMContentLoaded', initializeTheme);
+      
+      // Set year
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
   </body>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
   </html>
 

@@ -634,11 +634,170 @@ function updateOverviewStats() {
 
 // Additional export functions
 function exportToPDF() {
-	showNotification('PDF export feature coming soon!', 'info');
+	try {
+		const outbreaks = JSON.parse(localStorage.getItem('mw_outbreaks') || '{}');
+		const byDistrict = outbreaks.byDistrict || [];
+		const diseaseFilter = document.getElementById('diseaseFilter');
+		const currentDisease = diseaseFilter ? diseaseFilter.value : 'dengue';
+		
+		const totalCases = byDistrict.reduce((sum, d) => sum + (d[currentDisease] || 0), 0);
+		const highRiskDistricts = byDistrict.filter(d => (d[currentDisease] || 0) >= 20);
+		const criticalDistricts = byDistrict.filter(d => (d[currentDisease] || 0) >= 40);
+		
+		// Create PDF using jsPDF
+		const { jsPDF } = window.jspdf;
+		const doc = new jsPDF();
+		
+		// Set font
+		doc.setFont('helvetica');
+		
+		// Title
+		doc.setFontSize(20);
+		doc.text('Kerala Health Dashboard Report', 20, 20);
+		
+		// Subtitle
+		doc.setFontSize(14);
+		doc.text(`Disease: ${currentDisease.toUpperCase()}`, 20, 35);
+		doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 45);
+		
+		// Executive Summary
+		doc.setFontSize(12);
+		doc.text('Executive Summary', 20, 65);
+		doc.setFontSize(10);
+		doc.text(`• Total Active Cases: ${totalCases}`, 25, 80);
+		doc.text(`• High Risk Districts (≥20 cases): ${highRiskDistricts.length}`, 25, 90);
+		doc.text(`• Critical Districts (≥40 cases): ${criticalDistricts.length}`, 25, 100);
+		doc.text(`• Total Districts Monitored: ${byDistrict.length}`, 25, 110);
+		
+		// District Breakdown Table
+		doc.setFontSize(12);
+		doc.text('District Breakdown', 20, 130);
+		
+		// Table headers
+		doc.setFontSize(10);
+		doc.text('District', 20, 145);
+		doc.text('Cases', 80, 145);
+		doc.text('Risk Level', 120, 145);
+		
+		// Table data
+		let yPos = 155;
+		byDistrict
+			.sort((a, b) => (b[currentDisease] || 0) - (a[currentDisease] || 0))
+			.forEach((d, index) => {
+				if (yPos > 280) {
+					doc.addPage();
+					yPos = 20;
+				}
+				
+				const cases = d[currentDisease] || 0;
+				const risk = cases >= 40 ? 'CRITICAL' : cases >= 20 ? 'HIGH' : cases >= 10 ? 'MEDIUM' : 'LOW';
+				
+				doc.text(d.district, 20, yPos);
+				doc.text(cases.toString(), 80, yPos);
+				doc.text(risk, 120, yPos);
+				yPos += 10;
+			});
+		
+		// Critical Alerts
+		if (criticalDistricts.length > 0) {
+			if (yPos > 250) {
+				doc.addPage();
+				yPos = 20;
+			}
+			
+			doc.setFontSize(12);
+			doc.text('Critical Alerts', 20, yPos);
+			yPos += 15;
+			
+			doc.setFontSize(10);
+			criticalDistricts.forEach(d => {
+				if (yPos > 280) {
+					doc.addPage();
+					yPos = 20;
+				}
+				doc.text(`• ${d.district}: ${d[currentDisease]} cases - IMMEDIATE ACTION REQUIRED`, 25, yPos);
+				yPos += 10;
+			});
+		}
+		
+		// Recommendations
+		if (yPos > 250) {
+			doc.addPage();
+			yPos = 20;
+		}
+		
+		doc.setFontSize(12);
+		doc.text('Recommendations', 20, yPos);
+		yPos += 15;
+		
+		doc.setFontSize(10);
+		if (criticalDistricts.length > 0) {
+			doc.text('• Deploy emergency response teams to critical districts', 25, yPos);
+			yPos += 10;
+			doc.text('• Increase medical supplies and personnel', 25, yPos);
+			yPos += 10;
+			doc.text('• Implement containment measures', 25, yPos);
+		} else if (highRiskDistricts.length > 0) {
+			doc.text('• Monitor high risk districts closely', 25, yPos);
+			yPos += 10;
+			doc.text('• Prepare contingency plans', 25, yPos);
+			yPos += 10;
+			doc.text('• Increase surveillance', 25, yPos);
+		} else {
+			doc.text('• Continue routine monitoring', 25, yPos);
+			yPos += 10;
+			doc.text('• Maintain current prevention measures', 25, yPos);
+		}
+		
+		// Save the PDF
+		doc.save(`Kerala-${currentDisease}-Health-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+		
+		showNotification('PDF report exported successfully!', 'success');
+	} catch (error) {
+		console.error('PDF export error:', error);
+		showNotification('PDF export failed. Please try again.', 'danger');
+	}
 }
 
 function exportToExcel() {
-	showNotification('Excel export feature coming soon!', 'info');
+	const outbreaks = JSON.parse(localStorage.getItem('mw_outbreaks') || '{}');
+	const byDistrict = outbreaks.byDistrict || [];
+	const diseaseFilter = document.getElementById('diseaseFilter');
+	const currentDisease = diseaseFilter ? diseaseFilter.value : 'dengue';
+	
+	// Create CSV content (Excel compatible)
+	const csvContent = [
+		['Kerala Health Dashboard Report'],
+		['Disease:', currentDisease.toUpperCase()],
+		['Generated:', new Date().toLocaleString()],
+		[''],
+		['District', 'Dengue', 'Malaria', 'TB', 'COVID-19', 'Total Cases', 'Risk Level'],
+		...byDistrict.map(d => {
+			const total = (d.dengue || 0) + (d.malaria || 0) + (d.tb || 0) + (d.covid || 0);
+			const current = d[currentDisease] || 0;
+			const risk = current >= 40 ? 'CRITICAL' : current >= 20 ? 'HIGH' : current >= 10 ? 'MEDIUM' : 'LOW';
+			return [d.district, d.dengue || 0, d.malaria || 0, d.tb || 0, d.covid || 0, total, risk];
+		}),
+		[''],
+		['Summary'],
+		['Total Active Cases', byDistrict.reduce((sum, d) => sum + (d[currentDisease] || 0), 0)],
+		['High Risk Districts', byDistrict.filter(d => (d[currentDisease] || 0) >= 20).length],
+		['Critical Districts', byDistrict.filter(d => (d[currentDisease] || 0) >= 40).length],
+		['Total Districts', byDistrict.length]
+	].map(row => row.join(',')).join('\n');
+	
+	// Create and download CSV
+	const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = `Kerala-${currentDisease}-Health-Report-${new Date().toISOString().split('T')[0]}.csv`;
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	URL.revokeObjectURL(url);
+	
+	showNotification('Report exported as CSV (Excel compatible)!', 'success');
 }
 
 // Make functions globally accessible
@@ -891,8 +1050,56 @@ window.fitMapToMarkers = function() {
 	}
 };
 
+// Theme toggle functionality
+window.toggleTheme = function() {
+	const currentTheme = document.documentElement.getAttribute('data-theme');
+	const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+	
+	// Set new theme
+	document.documentElement.setAttribute('data-theme', newTheme);
+	
+	// Update button text and icon
+	const themeIcon = document.getElementById('themeIcon');
+	const themeToggle = document.getElementById('themeToggle');
+	
+	if (newTheme === 'dark') {
+		themeIcon.textContent = '☀️';
+		themeToggle.innerHTML = '<span id="themeIcon">☀️</span> Light';
+	} else {
+		themeIcon.textContent = '🌙';
+		themeToggle.innerHTML = '<span id="themeIcon">🌙</span> Dark';
+	}
+	
+	// Save theme preference
+	localStorage.setItem('theme', newTheme);
+	
+	// Show notification
+	showNotification(`Switched to ${newTheme} theme`, 'info');
+};
+
+// Initialize theme on page load
+function initializeTheme() {
+	const savedTheme = localStorage.getItem('theme') || 'light';
+	document.documentElement.setAttribute('data-theme', savedTheme);
+	
+	// Update button to show current theme
+	const themeIcon = document.getElementById('themeIcon');
+	const themeToggle = document.getElementById('themeToggle');
+	
+	if (savedTheme === 'dark') {
+		themeIcon.textContent = '☀️';
+		themeToggle.innerHTML = '<span id="themeIcon">☀️</span> Light';
+	} else {
+		themeIcon.textContent = '🌙';
+		themeToggle.innerHTML = '<span id="themeIcon">🌙</span> Dark';
+	}
+}
+
 // Initialize overview data when page loads
 document.addEventListener('DOMContentLoaded', function() {
+	// Initialize theme first
+	initializeTheme();
+	
 	// Wait a bit for the dashboard to initialize
 	setTimeout(() => {
 		window.updateOverviewStats();
