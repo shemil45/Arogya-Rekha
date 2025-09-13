@@ -13,7 +13,12 @@
   <div class="container py-3" style="max-width: 500px;">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <a href="./register.html" class="text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Back</a>
-      <a href="../../index.html" class="text-decoration-none small">Home <i class="fas fa-home ms-1"></i></a>
+      <div class="d-flex gap-2">
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
+          <i class="fas fa-sign-out-alt me-1"></i> Logout
+        </button>
+        <a href="../../index.html" class="text-decoration-none small">Home <i class="fas fa-home ms-1"></i></a>
+      </div>
     </div>
 
     <!-- Health ID Card -->
@@ -96,12 +101,21 @@
 
   <div class="app-toast" role="status" aria-live="polite"></div>
 
+  <script src="../../js/data.js"></script>
   <script src="../../js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script>
     // Get worker data
-    const id = App.getSelectedWorker();
-    const worker = id ? App.findWorkerById(id) : null;
+    // Get current user data
+    const currentUser = UserManager.getCurrentUser();
+    const selectedWorkerId = App.getSelectedWorker();
+    const worker = currentUser || (selectedWorkerId ? App.findWorkerById(selectedWorkerId) : null);
+    
+    // Debug: Log the worker data
+    console.log('Current user:', currentUser);
+    console.log('Selected worker ID:', selectedWorkerId);
+    console.log('Worker data:', worker);
+    
     if (!worker) { window.location.href = './register.html'; }
 
     // Format date as DD/MM/YYYY
@@ -206,6 +220,45 @@
     // Initialize the card when the page loads
     document.addEventListener('DOMContentLoaded', () => {
       populateCard();
+    });
+
+    // Logout functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          console.log('Logout button clicked'); // Debug log
+          if (confirm('Are you sure you want to logout?')) {
+            try {
+              // Clear current user from UserManager
+              if (typeof UserManager !== 'undefined') {
+                UserManager.clearCurrentUser();
+                console.log('UserManager cleared'); // Debug log
+              }
+              
+              // Also clear from App for backward compatibility
+              if (typeof App !== 'undefined') {
+                localStorage.removeItem(App.STORAGE_KEYS.selectedWorkerId);
+                console.log('App storage cleared'); // Debug log
+              }
+              
+              // Show logout message
+              App.showToast('Logged out successfully');
+              
+              // Redirect to main page
+              setTimeout(() => {
+                window.location.href = '../../index.html';
+              }, 1000);
+            } catch (error) {
+              console.error('Logout error:', error);
+              // Fallback: just redirect
+              window.location.href = '../../index.html';
+            }
+          }
+        });
+      } else {
+        console.error('Logout button not found');
+      }
     });
   </script>
 </body>
