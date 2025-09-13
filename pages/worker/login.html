@@ -5,14 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/main.css" />
     <link rel="stylesheet" href="../../css/mobile.css" />
+    <link rel="stylesheet" href="health-id.css" />
   </head>
   <body>
-    <div class="container py-3" style="max-width: 640px;">
-      <a href="./language-select.html" class="text-decoration-none small">&larr; Back</a>
-      <h1 id="titleLogin" class="h4 fw-bold mt-2">Login</h1>
-      <p id="subtitleLogin" class="text-muted small">Enter your mobile number to continue</p>
+    <!-- Header Section -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-left">
+          <a href="./language-select.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <div class="header-title">
+            <h1 id="titleLogin">Login</h1>
+            <p id="subtitleLogin">Enter your mobile number to continue</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <!-- Empty for now, can add logout or other actions if needed -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container py-3" style="max-width: 640px; padding-top: 20px;">
 
       <form id="loginForm" novalidate class="card border-0 shadow-sm p-3 mobile-card">
         <div class="row g-3">

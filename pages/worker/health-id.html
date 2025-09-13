@@ -10,16 +10,27 @@
   <link rel="stylesheet" href="health-id.css">
 </head>
 <body>
-  <div class="container py-3" style="max-width: 500px;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <a href="./register.html" class="text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Back</a>
-      <div class="d-flex gap-2">
-        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
-          <i class="fas fa-sign-out-alt me-1"></i> Logout
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <a href="./login.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-title">
+          <h1>Health ID Card</h1>
+          <p>Your Digital Health Record</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="logoutBtn" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
         </button>
-        <a href="../../index.html" class="text-decoration-none small">Home <i class="fas fa-home ms-1"></i></a>
       </div>
     </div>
+  </div>
+
+  <div class="container py-3" style="max-width: 500px;">
 
     <!-- Health ID Card -->
     <div class="health-id-card">
@@ -96,6 +107,43 @@
       <button class="action-btn print-btn" onclick="printCard()">
         <i class="fas fa-print"></i> Print
       </button>
+    </div>
+
+    <!-- Services Section -->
+    <div class="services-section">
+      <h4 class="services-title">Services</h4>
+      <div class="services-grid">
+        <div class="service-card" onclick="navigateToAppointments()">
+          <div class="service-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="service-content">
+            <h5>Appointments</h5>
+            <p>Book and manage your health appointments</p>
+          </div>
+        </div>
+        <div class="service-card" onclick="navigateToMyHealth()">
+          <div class="service-icon">
+            <i class="fas fa-heartbeat"></i>
+          </div>
+          <div class="service-content">
+            <h5>My Health</h5>
+            <p>View your health records and history</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Footer -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="navigateToProfile()">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
     </div>
   </div>
 
@@ -215,6 +263,28 @@
     // Print Card
     function printCard() {
       window.print();
+    }
+    
+    // Navigation functions
+    function navigateToAppointments() {
+      // For now, show a placeholder message
+      App.showToast('Appointments feature coming soon!');
+      // In the future, this would navigate to appointments page
+      // window.location.href = './appointments.html';
+    }
+    
+    function navigateToMyHealth() {
+      // For now, show a placeholder message
+      App.showToast('My Health feature coming soon!');
+      // In the future, this would navigate to health records page
+      // window.location.href = './my-health.html';
+    }
+    
+    function navigateToProfile() {
+      // Navigate to profile section or page
+      App.showToast('Profile feature coming soon!');
+      // In the future, this would navigate to profile page
+      // window.location.href = './profile.html';
     }
     
     // Initialize the card when the page loads
