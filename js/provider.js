@@ -52,7 +52,12 @@
 	}
 
 	function performAdvancedSearch(criteria) {
-		const workers = App.getWorkers();
+		// Initialize UserManager to ensure mock data is available
+		if (typeof UserManager !== 'undefined') {
+			UserManager.initMockUsers();
+		}
+		
+		const workers = UserManager.getAllUsers();
 		const uid = (criteria.healthId||'').toUpperCase();
 		const name = (criteria.name||'').toLowerCase();
 		const state = (criteria.state||'').toLowerCase();

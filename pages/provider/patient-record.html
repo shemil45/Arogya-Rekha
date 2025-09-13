@@ -14,6 +14,7 @@
         <a href="./dashboard.html" class="text-decoration-none small">&larr; Back</a>
         <div class="d-flex gap-2">
           <button id="printBtn" class="btn btn-outline-secondary btn-sm">Print</button>
+          <button id="testDataBtn" class="btn btn-info btn-sm">Test Data</button>
           <a href="../../index.html" class="btn btn-warning btn-sm">Logout</a>
         </div>
       </div>
@@ -136,6 +137,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="../../js/data.js"></script>
     <script src="../../js/main.js"></script>
     <script src="../../js/provider.js"></script>
     <script src="../../js/qr-generator.js"></script>
@@ -143,99 +146,125 @@
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
 
-      // Demo/mock worker for UI showcase when no worker is found via query
-      const MOCK_WORKER = {
-        healthId: 'RK-ERK-2801',
-        name: 'Rahul Kumar',
-        age: 28,
-        gender: 'Male',
-        homeState: 'Bihar',
-        currentLocation: { district: 'Ernakulam' },
-        status: 'Active',
-        nextAppointment: null,
-        records: [
-          {
-            date: '2025-08-15',
-            time: '10:30',
-            visitType: 'Consultation',
-            chiefComplaint: 'Fever and body ache',
-            bp: '118/76',
-            temp: '100.4°F',
-            hr: '78 bpm',
-            weight: '66 kg',
-            diagnosis: 'Viral fever',
-            treatment: 'Rest, hydration, antipyretics',
-            prescription: 'Paracetamol 500mg, 3/day for 5 days'
-          }
-        ],
-        history: [
-          { date: '2023-07-22', type: 'Diagnosis', notes: 'Typhoid fever treated successfully.' },
-          { date: '2024-06-12', type: 'Diagnosis', notes: 'Lower back pain; advised physiotherapy and NSAIDs.' },
-          { date: '2021-09-05', type: 'Diagnosis', notes: 'Malaria (P. vivax); completed antimalarial course.' },
-          { date: '—', type: 'Surgeries', notes: 'None' },
-          { date: '—', type: 'Chronic conditions', notes: 'None' }
-        ],
-        vaccinations: [
-          { 
-            name: 'COVID-19 (Covishield)', 
-            doses: 2, 
-            lastDate: '2022-05-20',
-            dateAdministered: '2022-05-20',
-            doseNumber: 2,
-            administeredBy: 'Dr. Sarah Johnson',
-            notes: 'Second dose completed'
-          },
-          { 
-            name: 'Tetanus', 
-            doses: 1, 
-            lastDate: '2023-03-10',
-            dateAdministered: '2023-03-10',
-            doseNumber: 1,
-            administeredBy: 'Dr. Michael Chen',
-            notes: 'Tetanus booster'
-          },
-          { 
-            name: 'Hepatitis B', 
-            doses: 1, 
-            lastDate: '2021-01-18',
-            dateAdministered: '2021-01-18',
-            doseNumber: 1,
-            administeredBy: 'Dr. Priya Sharma',
-            notes: 'Initial vaccination'
-          }
-        ],
-        prescriptions: [
-          { drug: 'Paracetamol', strength: '500mg', frequency: '3/day', duration: '5 days', reason: 'Fever', date: '2025-08-15' },
-          { drug: 'Ibuprofen', strength: '400mg', frequency: '2/day', duration: '7 days', reason: 'Back pain', date: '2024-06-12' }
-        ],
-        allergies: [
-          { name: 'Penicillin', type: 'medication', description: 'Reaction: rash. Note: avoid all penicillin-class drugs.' },
-          { name: 'Peanuts', type: 'food', description: 'Reaction: swelling. Note: carries epipen.' },
-          { name: 'Dust', type: 'environmental', description: 'Reaction: sneezing. Note: mild severity.' }
-        ],
-        clinicalNotes: [
-          'Patient is a migrant worker reporting increased fatigue due to long work hours. Advised rest, hydration, and periodic wellness check-ups.',
-          'No psychological distress noted. BP and HR normal. Follow-up in one month.'
-        ].join('\n\n')
-      };
+      // Initialize UserManager and force use of new data
+      if (typeof UserManager !== 'undefined') {
+        UserManager.initMockUsers();
+        
+        // ALWAYS use UserManager data (ignore old App data)
+        const users = UserManager.getAllUsers();
+        if (users && users.length > 0) {
+          // Try to find specific user by ID, or use first user as default
+          worker = users.find(u => u.healthId === id) || users[0];
+        }
+      }
+      
+      // If still no worker, create a basic one
+      if (!worker) {
+        worker = {
+          healthId: id || 'MW123456',
+          name: 'Rahul Kumar',
+          age: 28,
+          gender: 'Male',
+          homeState: 'Bihar',
+          currentLocation: { district: 'Ernakulam' },
+          status: 'Active',
+          nextAppointment: null,
+          records: [
+            {
+              date: '2025-01-15',
+              time: '10:30',
+              visitType: 'Consultation',
+              chiefComplaint: 'Fever and body ache',
+              bp: '118/76',
+              temp: '100.4°F',
+              hr: '78 bpm',
+              weight: '66 kg',
+              diagnosis: 'Viral fever',
+              treatment: 'Rest, hydration, antipyretics',
+              prescription: 'Paracetamol 500mg, 3/day for 5 days'
+            }
+          ],
+          history: [
+            { date: '2023-07-22', type: 'Diagnosis', notes: 'Typhoid fever treated successfully.' },
+            { date: '2024-06-12', type: 'Diagnosis', notes: 'Lower back pain; advised physiotherapy.' }
+          ],
+          vaccinations: [
+            { 
+              name: 'COVID-19 (Covishield)', 
+              doses: 2, 
+              lastDate: '2022-05-20',
+              dateAdministered: '2022-05-20',
+              doseNumber: 2,
+              administeredBy: 'Dr. Sarah Johnson',
+              notes: 'Second dose completed'
+            }
+          ],
+          prescriptions: [
+            { drug: 'Paracetamol', strength: '500mg', frequency: '3/day', duration: '5 days', reason: 'Fever', date: '2025-01-15' }
+          ],
+          allergies: [
+            { name: 'Penicillin', type: 'medication', description: 'Reaction: rash. Note: avoid penicillin-class drugs.' }
+          ],
+          clinicalNotes: 'Patient is a migrant worker with good overall health. Regular follow-ups recommended.'
+        };
+      }
 
-      let worker = App.findWorkerById(id);
-      // If no worker found, use mock for demo and skip redirect
-      if (!worker) { worker = { ...MOCK_WORKER }; }
+      // Ensure all required arrays exist
+      worker.records = worker.records || [];
+      worker.history = worker.history || [];
+      worker.vaccinations = worker.vaccinations || [];
+      worker.prescriptions = worker.prescriptions || [];
+      worker.allergies = worker.allergies || [];
+      worker.clinicalNotes = worker.clinicalNotes || 'No clinical notes available.';
 
+      // First populate basic patient information
       document.getElementById('pid').textContent = worker.healthId;
       document.getElementById('pname').textContent = worker.name;
       document.getElementById('pmeta').textContent = `${worker.gender}, ${worker.age} • ${worker.homeState} • ${(worker.currentLocation?.district)||'Kerala'}`;
       QR.render('qr', worker.healthId, 120);
 
+      // Now render all sections with the loaded data (with a small delay to ensure DOM is ready)
+      setTimeout(() => {
+        console.log('About to render sections, worker data:', worker);
+        console.log('Worker history:', worker.history);
+        console.log('Worker vaccinations:', worker.vaccinations);
+        console.log('Worker prescriptions:', worker.prescriptions);
+        console.log('Worker allergies:', worker.allergies);
+        
+        renderTimeline();
+        renderHistory();
+        renderVaccinations();
+        renderPrescriptions();
+        renderAllergies();
+        
+        // Force show History tab for testing
+        console.log('Forcing History tab to be visible...');
+        const historyTab = document.querySelector('[data-bs-target="#history"]');
+        const historyPane = document.getElementById('history');
+        if (historyTab && historyPane) {
+          // Remove active from overview
+          document.querySelector('[data-bs-target="#overview"]').classList.remove('active');
+          document.getElementById('overview').classList.remove('show', 'active');
+          
+          // Add active to history
+          historyTab.classList.add('active');
+          historyPane.classList.add('show', 'active');
+          console.log('History tab is now active');
+        }
+      }, 100);
+
+      // Pre-fill clinical notes textarea
+      const ta = document.getElementById('clinicalNotes');
+      if (ta && worker.clinicalNotes) ta.value = worker.clinicalNotes;
+
       // status badge + last visit
       (function(){
         const last = (worker.records||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
         document.getElementById('lastVisit').textContent = last ? last.date : '—';
-        const status = worker.status || 'Stable';
+        const status = worker.status || 'Active';
         const badge = document.getElementById('statusBadge');
         badge.textContent = status;
-        badge.className = 'badge ' + (status==='Critical' ? 'bg-danger' : status==='Stable' ? 'bg-success' : 'bg-secondary');
+        badge.className = 'badge ' + (status==='Critical' ? 'bg-danger' : status==='Active' ? 'bg-success' : status==='Stable' ? 'bg-success' : 'bg-secondary');
         if (worker.nextAppointment) {
           document.getElementById('nextAppt').textContent = `${worker.nextAppointment.date} ${worker.nextAppointment.time||''}`;
           document.getElementById('nextApptWrap').style.display = '';
@@ -248,26 +277,84 @@
 
       function renderHistory() {
         const container = document.getElementById('historyList');
-        container.innerHTML = '';
+        console.log('renderHistory called, container:', container);
+        if (!container) {
+          console.error('historyList container not found!');
+          return;
+        }
+        
+        // First, add a test message to verify the container is working
+        container.innerHTML = '<div class="alert alert-info">Testing History Rendering...</div>';
+        
         const hist = worker.history || [];
-        if (hist.length === 0) { container.innerHTML = '<div class="text-muted">No history</div>'; return; }
-        hist.slice().reverse().forEach(h => {
+        console.log('History data:', hist);
+        
+        // Clear the test message and render actual content
+        container.innerHTML = '';
+        
+        if (hist.length === 0) { 
+          // Fallback: render some basic history data for testing
+          container.innerHTML = `
+            <div class="border rounded p-3 mb-3 bg-light">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <div class="small text-muted mb-1">2023-07-22</div>
+                  <div class="fw-semibold text-primary mb-1">Diagnosis</div>
+                  <div class="text-muted small">Typhoid fever treated successfully with antibiotics.</div>
+                </div>
+                <span class="badge bg-secondary ms-2">Diagnosis</span>
+              </div>
+            </div>
+            <div class="border rounded p-3 mb-3 bg-light">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <div class="small text-muted mb-1">2024-06-12</div>
+                  <div class="fw-semibold text-primary mb-1">Diagnosis</div>
+                  <div class="text-muted small">Lower back pain due to heavy lifting; advised physiotherapy and NSAIDs.</div>
+                </div>
+                <span class="badge bg-secondary ms-2">Diagnosis</span>
+              </div>
+            </div>
+            <div class="text-muted small">Fallback history data - UserManager data not loaded</div>
+          `;
+          return; 
+        }
+        
+        // Sort by date (most recent first) and render
+        hist.slice().sort((a, b) => {
+          if (a.date === '—') return 1;
+          if (b.date === '—') return -1;
+          return new Date(b.date) - new Date(a.date);
+        }).forEach(h => {
           const el = document.createElement('div');
-          el.className = 'border rounded p-2 mb-2';
-          el.innerHTML = `<div class="small text-muted">${h.date}</div><div>${h.type}</div><div class="text-muted small">${h.notes}</div>`;
+          el.className = 'border rounded p-3 mb-3 bg-light';
+          el.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <div class="small text-muted mb-1">${h.date}</div>
+                <div class="fw-semibold text-primary mb-1">${h.type}</div>
+                <div class="text-muted small">${h.notes}</div>
+              </div>
+              <span class="badge bg-secondary ms-2">${h.type}</span>
+            </div>
+          `;
           container.appendChild(el);
         });
       }
 
-      renderTimeline();
-      renderHistory();
+      // Functions will be called after worker data is loaded
 
       // Vaccinations: render list for demo and real data
       function renderVaccinations() {
         const container = document.getElementById('vaccinationsList');
-        if (!container) return;
+        console.log('renderVaccinations called, container:', container);
+        if (!container) {
+          console.error('vaccinationsList container not found!');
+          return;
+        }
         container.innerHTML = '';
         const list = worker.vaccinations || [];
+        console.log('Vaccinations data:', list);
         if (list.length === 0) { 
           container.innerHTML = '<div class="text-muted">No vaccination records</div>'; 
           return; 
@@ -314,10 +401,18 @@
       // Prescriptions: render list items
       function renderPrescriptions() {
         const container = document.getElementById('prescriptionsList');
-        if (!container) return;
+        console.log('renderPrescriptions called, container:', container);
+        if (!container) {
+          console.error('prescriptionsList container not found!');
+          return;
+        }
         container.innerHTML = '';
         const list = worker.prescriptions || [];
-        if (list.length === 0) { container.innerHTML = '<div class="text-muted">No prescriptions</div>'; return; }
+        console.log('Prescriptions data:', list);
+        if (list.length === 0) { 
+          container.innerHTML = '<div class="text-muted">No prescriptions</div>'; 
+          return; 
+        }
         const group = document.createElement('div');
         group.className = 'list-group';
         list.forEach(p => {
@@ -336,15 +431,9 @@
         container.appendChild(group);
       }
 
-      // Pre-fill clinical notes textarea for demo
-      (function seedNotes(){
-        const ta = document.getElementById('clinicalNotes');
-        if (ta && worker.clinicalNotes) ta.value = worker.clinicalNotes;
-      })();
+      // Clinical notes seeding moved to after worker data is loaded
 
-      // Render demo lists
-      renderVaccinations();
-      renderPrescriptions();
+      // Render calls are now handled above after worker data is loaded
 
       // Ensure allergies exist and re-render (already done below as well)
       worker.allergies = Array.isArray(worker.allergies) ? worker.allergies : [];
@@ -363,9 +452,14 @@
       // Render the list of allergies
       function renderAllergies() {
         const container = document.getElementById('allergyList');
-        if (!container) return;
+        console.log('renderAllergies called, container:', container);
+        if (!container) {
+          console.error('allergyList container not found!');
+          return;
+        }
         container.innerHTML = '';
         const list = worker.allergies || [];
+        console.log('Allergies data:', list);
         if (list.length === 0) {
           container.innerHTML = '<div class="text-muted">No recorded allergies</div>';
           return;
@@ -453,6 +547,39 @@
       });
 
       document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+      document.getElementById('testDataBtn').addEventListener('click', () => {
+        const summary = `
+Patient: ${worker.name} (${worker.healthId})
+Age: ${worker.age}, Gender: ${worker.gender}
+Home State: ${worker.homeState}
+Location: ${worker.currentLocation?.district || 'Kerala'}
+Status: ${worker.status}
+
+Records: ${worker.records.length}
+History: ${worker.history.length}
+Vaccinations: ${worker.vaccinations.length}
+Prescriptions: ${worker.prescriptions.length}
+Allergies: ${worker.allergies.length}
+
+DOM Elements Check:
+- historyList: ${document.getElementById('historyList') ? 'Found' : 'Missing'}
+- vaccinationsList: ${document.getElementById('vaccinationsList') ? 'Found' : 'Missing'}
+- prescriptionsList: ${document.getElementById('prescriptionsList') ? 'Found' : 'Missing'}
+- allergyList: ${document.getElementById('allergyList') ? 'Found' : 'Missing'}
+
+History Items:
+${worker.history.map(h => `- ${h.date}: ${h.type} - ${h.notes}`).join('\n')}
+        `;
+        alert(summary);
+        console.log('Full worker data:', worker);
+        console.log('DOM elements check:', {
+          historyList: document.getElementById('historyList'),
+          vaccinationsList: document.getElementById('vaccinationsList'),
+          prescriptionsList: document.getElementById('prescriptionsList'),
+          allergyList: document.getElementById('allergyList')
+        });
+      });
 
       // quick actions
       document.getElementById('btnSchedule').addEventListener('click', () => {

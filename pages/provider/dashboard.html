@@ -142,8 +142,13 @@
       document.getElementById('roleText').textContent = localStorage.getItem(App.STORAGE_KEYS.providerRole) || '—';
       // stats row removed; keep only alert banner and quick actions
 
+      // Initialize UserManager to ensure mock data is available
+      if (typeof UserManager !== 'undefined') {
+        UserManager.initMockUsers();
+      }
+
       (function(){
-        const workers = App.getWorkers();
+        const workers = UserManager.getAllUsers();
         const critical = workers.filter(w => w.status === 'Critical').length;
         const banner = document.getElementById('alertBanner');
         if (critical > 0) {
@@ -151,7 +156,8 @@
           banner.innerHTML = `<strong>Alert:</strong> ${critical} critical patient${critical>1?'s':''} require attention.`;
         }
       })();
-      const recent = (App.getWorkers() || []).slice(0, 5);
+      
+      const recent = (UserManager.getAllUsers() || []).slice(0, 5);
       const list = document.getElementById('recentList');
       if (recent.length === 0) {
         list.innerHTML = '<li class="list-group-item">No recent patients</li>';
@@ -176,7 +182,7 @@
 
       document.getElementById('btnDailyReport').addEventListener('click', () => {
         const modalEl = document.getElementById('dailyReportModal');
-        const workers = App.getWorkers();
+        const workers = UserManager.getAllUsers();
         const todayStr = new Date().toISOString().slice(0,10);
         let visits = 0; let critical = 0; let pending = 0;
         workers.forEach(w=>{ (w.records||[]).forEach(r=>{ if (r.date===todayStr) visits++; if (r.pending) pending++; }); if (w.status==='Critical') critical++; });

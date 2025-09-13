@@ -5,7 +5,7 @@
 	let outbreaks = JSON.parse(localStorage.getItem('mw_outbreaks') || '{}');
 	if (!outbreaks.byDistrict || outbreaks.byDistrict.length === 0) {
 		// Load from sample data
-		fetch('../../assets/data/sample-data.json')
+		fetch('assets/data/sample-data.json')
 			.then(response => response.json())
 			.then(data => {
 				outbreaks = data.outbreaks;

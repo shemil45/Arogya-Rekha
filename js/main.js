@@ -11,7 +11,7 @@ window.App = (function () {
 		try {
 			const existing = localStorage.getItem(STORAGE_KEYS.workers);
 			if (!existing) {
-				fetch('../assets/data/sample-data.json')
+				fetch('assets/data/sample-data.json')
 					.then(r => r.json())
 					.then(data => {
 						localStorage.setItem(STORAGE_KEYS.workers, JSON.stringify(data.workers));
