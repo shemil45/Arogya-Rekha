@@ -19,6 +19,7 @@ const UserManager = {
         homeState: "Bihar",
         phone: "9000011111", // Store without +91 prefix for easier matching
         dob: "1996-03-15", // Date of birth
+        fieldOfWork: "Construction Worker",
         currentLocation: { district: "Ernakulam", lat: 9.9816, lng: 76.2999 },
         history: [
           { date: "2025-08-01", type: "Visit", notes: "Fever, tested for malaria (negative)" },
@@ -38,6 +39,7 @@ const UserManager = {
         homeState: "Uttar Pradesh",
         phone: "9000022222",
         dob: "1990-07-22", // Date of birth
+        fieldOfWork: "Factory Worker",
         currentLocation: { district: "Kozhikode", lat: 11.2588, lng: 75.7804 },
         history: [
           { date: "2025-06-20", type: "Visit", notes: "Back pain due to labor" }
@@ -54,6 +56,7 @@ const UserManager = {
         homeState: "West Bengal",
         phone: "9000033333",
         dob: "1999-11-08", // Date of birth
+        fieldOfWork: "Agricultural Worker",
         currentLocation: { district: "Thiruvananthapuram", lat: 8.5241, lng: 76.9366 },
         history: [
           { date: "2025-07-15", type: "Vaccination", notes: "Hepatitis B" }
@@ -70,6 +73,7 @@ const UserManager = {
         homeState: "Odisha",
         phone: "9000044444",
         dob: "1993-05-14", // Date of birth
+        fieldOfWork: "Domestic Worker",
         currentLocation: { district: "Malappuram", lat: 11.0500, lng: 76.0700 },
         history: [],
         records: [
@@ -86,6 +90,7 @@ const UserManager = {
         homeState: "West Bengal",
         phone: "9000055555",
         dob: "1995-09-30", // Date of birth
+        fieldOfWork: "Textile Worker",
         currentLocation: { district: "Palakkad", lat: 10.7867, lng: 76.6548 },
         history: [
           { date: "2025-01-13", type: "Visit", notes: "Migraine" }
@@ -95,7 +100,7 @@ const UserManager = {
       }
     ];
 
-    // Always update with latest mock users (to include new DOB fields)
+    // Always update with latest mock users (to include new fields)
     localStorage.setItem(this.STORAGE_KEYS.users, JSON.stringify(mockUsers));
     
     // Also store in workers for backward compatibility
@@ -104,6 +109,40 @@ const UserManager = {
       phone: "+91 " + user.phone // Add +91 prefix for compatibility
     }));
     localStorage.setItem(this.STORAGE_KEYS.workers, JSON.stringify(workersForCompatibility));
+    
+    // Update existing users to include field of work if missing
+    this.updateExistingUsersWithFieldOfWork();
+  },
+
+  // Update existing users to include field of work if missing
+  updateExistingUsersWithFieldOfWork() {
+    const users = this.getAllUsers();
+    let updated = false;
+    
+    const fieldOfWorkMap = {
+      "MW123456": "Construction Worker",
+      "MW234567": "Factory Worker", 
+      "MW345678": "Agricultural Worker",
+      "MW456789": "Domestic Worker",
+      "MW567890": "Textile Worker"
+    };
+    
+    users.forEach(user => {
+      if (!user.fieldOfWork && fieldOfWorkMap[user.healthId]) {
+        user.fieldOfWork = fieldOfWorkMap[user.healthId];
+        updated = true;
+      }
+    });
+    
+    if (updated) {
+      localStorage.setItem(this.STORAGE_KEYS.users, JSON.stringify(users));
+      // Also update workers for compatibility
+      const workersForCompatibility = users.map(user => ({
+        ...user,
+        phone: "+91 " + user.phone
+      }));
+      localStorage.setItem(this.STORAGE_KEYS.workers, JSON.stringify(workersForCompatibility));
+    }
   },
 
   // Find user by phone number
@@ -160,6 +199,11 @@ const UserManager = {
   getCurrentUser() {
     const user = localStorage.getItem(this.STORAGE_KEYS.currentUser);
     return user ? JSON.parse(user) : null;
+  },
+
+  // Update current user data
+  updateCurrentUser(userData) {
+    localStorage.setItem(this.STORAGE_KEYS.currentUser, JSON.stringify(userData));
   },
 
   // Clear current user (logout)
