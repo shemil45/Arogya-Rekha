@@ -100,6 +100,29 @@
             <div id="errorPhone" class="invalid-feedback">10-digit phone required</div>
           </div>
           <div class="col-12">
+            <label id="labelFieldOfWork" class="form-label">Field of Work</label>
+            <select id="inputFieldOfWork" class="form-select" name="fieldOfWork" required>
+              <option id="optChooseFieldOfWork" value="" selected disabled>Choose</option>
+              <option>Construction Worker</option>
+              <option>Factory Worker</option>
+              <option>Agricultural Worker</option>
+              <option>Domestic Worker</option>
+              <option>Textile Worker</option>
+              <option>Mason</option>
+              <option>Painter</option>
+              <option>Electrician</option>
+              <option>Plumber</option>
+              <option>Driver</option>
+              <option>Security Guard</option>
+              <option>Cleaner</option>
+              <option>Cook</option>
+              <option>Gardener</option>
+              <option>Laborer</option>
+              <option>Other</option>
+            </select>
+            <div id="errorFieldOfWork" class="invalid-feedback">Select field of work</div>
+          </div>
+          <div class="col-12">
             <label id="labelDistrict" class="form-label">Current Location (Kerala)</label>
             <select id="inputDistrict" class="form-select" name="district" required>
               <option id="optChooseDistrict" value="" selected disabled>District</option>
@@ -127,7 +150,13 @@
     </div>
 
     <script src="../../js/main.js"></script>
+    <script src="../../js/data.js"></script>
     <script>
+      // Initialize UserManager
+      if (typeof UserManager !== 'undefined') {
+        UserManager.initMockUsers();
+      }
+      
       // Calculate DOB from age (approximate)
       function calculateDOB(age) {
         const today = new Date();
@@ -161,8 +190,10 @@
         const phoneNumber = fd.get('phone').trim();
         
         // Check if user already exists
+        console.log('Checking for existing user with phone:', phoneNumber);
         const existingUser = UserManager.findUserByPhone(phoneNumber);
         if (existingUser) {
+          console.log('User already exists:', existingUser);
           App.showToast('An account with this mobile number already exists. Please login instead.', 'error');
           return;
         }
@@ -176,6 +207,7 @@
           homeState: fd.get('homeState'),
           phone: phoneNumber, // Store without +91 prefix for easier matching
           dob: calculateDOB(Number(fd.get('age'))), // Calculate DOB from age
+          fieldOfWork: fd.get('fieldOfWork'), // Add field of work
           currentLocation: { district: fd.get('district') },
           history: [],
           records: [],
@@ -183,9 +215,11 @@
         };
         
         // Save to UserManager
+        console.log('Saving worker to UserManager:', worker);
         UserManager.addUser(worker);
         
         // Set as current user
+        console.log('Setting current user:', worker);
         UserManager.setCurrentUser(worker);
         
         // Also save to App for backward compatibility
@@ -209,6 +243,7 @@
           blood: { hi: 'रक्त समूह', bn: 'রক্তের গ্রুপ', ml: 'രക്ത ഗ്രൂപ്പ്', or: 'ରୁକ୍ତ ଗୋଷ୍ଠୀ', ta: 'இரத்தக் குழு' },
           homeState: { hi: 'राज्य', bn: 'রাজ্য', ml: 'സംസ്ഥാനം', or: 'ରାଜ୍ୟ', ta: 'மூல மாநிலம்' },
           phone: { hi: 'फ़ोन', bn: 'ফোন', ml: 'ഫോൺ', or: 'ଫୋନ୍', ta: 'தொலைபேசி' },
+          fieldOfWork: { hi: 'काम का क्षेत्र', bn: 'কাজের ক্ষেত্র', ml: 'ജോലിയുടെ മേഖല', or: 'କାମର କ୍ଷେତ୍ର', ta: 'வேலை புலம்' },
           district: { hi: 'जिला', bn: 'জেলা', ml: 'ജില്ല', or: 'ଜିଲ୍ଲା', ta: 'மாவட்டம்' },
           choose: { hi: 'चुनें', bn: 'পছন্দ করুন', ml: 'തിരഞ്ഞെടുക്കുക', or: 'ଛାଣିନିଅନ୍ତୁ', ta: 'தேர்ந்தெடுக்கவும்' },
           male: { hi: 'पुरुष', bn: 'পুরুষ', ml: 'പുരുഷൻ', or: 'ପୁରୁଷ', ta: 'ஆண்' },
@@ -223,6 +258,7 @@
           errBlood: { hi: 'रक्त समूह चुनें', bn: 'রক্তের গ্রুপ নির্বাচন করুন', ml: 'രക്ത ഗ്രൂപ്പ് തിരഞ്ഞെടുക്കുക', or: 'ରକ୍ତ ଗୋଷ୍ଠୀ ଚୟନ କରନ୍ତୁ', ta: 'இரத்தக் குழுவைத் தேர்ந்தெடுக்கவும்' },
           errState: { hi: 'गृहराज्य चुनें', bn: 'বাড়ির রাজ্য নির্বাচন করুন', ml: 'ഹോം സ്റ്റേറ്റ് തിരഞ്ഞെടുക്കുക', or: 'ବାସ ରାଜ୍ୟ ଚୟନ କରନ୍ତୁ', ta: 'வீட்டு மாநிலத்தைத் தேர்ந்தெடுக்கவும்' },
           errPhone: { hi: '10-अंकों का फोन आवश्यक', bn: '১০-সংখ্যার ফোন প্রয়োজন', ml: '10 അക്ക ഫോൺ ആവശ്യമാണ്', or: '10-ଅଙ୍କିୟ ଫୋନ୍ ଆବଶ୍ୟକ', ta: '10 இலக்க தொலைபேசி தேவை' },
+          errFieldOfWork: { hi: 'काम का क्षेत्र चुनें', bn: 'কাজের ক্ষেত্র নির্বাচন করুন', ml: 'ജോലിയുടെ മേഖല തിരഞ്ഞെടുക്കുക', or: 'କାମର କ୍ଷେତ୍ର ଚୟନ କରନ୍ତୁ', ta: 'வேலை புலத்தைத் தேர்ந்தெடுக்கவும்' },
           errDistrict: { hi: 'ज़िला चुनें', bn: 'জেলা নির্বাচন করুন', ml: 'ജില്ല തിരഞ്ഞെടുക്കുക', or: 'ଜିଲ୍ଲା ଚୟନ କରନ୍ତୁ', ta: 'மாவட்டத்தைத் தேர்ந்தெடுக்கவும்' }
         };
         function pair(en, key) {
@@ -240,10 +276,12 @@
         document.getElementById('labelHomeState').textContent = pair('Home State', 'homeState');
         document.getElementById('labelPhone').textContent = pair('Phone', 'phone');
         document.getElementById('inputPhone').setAttribute('placeholder', pair('10-digit number', 'phPhone'));
+        document.getElementById('labelFieldOfWork').textContent = pair('Field of Work', 'fieldOfWork');
         document.getElementById('labelDistrict').textContent = pair('Current Location (Kerala)', 'district');
         document.getElementById('optChooseGender').textContent = pair('Choose', 'choose');
         document.getElementById('optChooseBlood').textContent = pair('Choose', 'choose');
         document.getElementById('optChooseState').textContent = pair('Choose', 'choose');
+        document.getElementById('optChooseFieldOfWork').textContent = pair('Choose', 'choose');
         document.getElementById('optChooseDistrict').textContent = pair('District', 'district');
         document.getElementById('optMale').textContent = pair('Male', 'male');
         document.getElementById('optFemale').textContent = pair('Female', 'female');
@@ -255,6 +293,7 @@
         document.getElementById('errorBlood').textContent = pair('Select blood group', 'errBlood');
         document.getElementById('errorHomeState').textContent = pair('Select home state', 'errState');
         document.getElementById('errorPhone').textContent = pair('10-digit phone required', 'errPhone');
+        document.getElementById('errorFieldOfWork').textContent = pair('Select field of work', 'errFieldOfWork');
         document.getElementById('errorDistrict').textContent = pair('Select district', 'errDistrict');
       })();
     </script>
