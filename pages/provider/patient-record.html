@@ -74,7 +74,12 @@
           <div id="historyList"></div>
         </div>
         <div id="vaccinations" class="tab-pane fade p-3">
-          <div class="small text-muted">Vaccination Records</div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="small text-muted">Vaccination Records</div>
+            <button id="addVaccinationBtn" class="btn vaccination-add-btn btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#vaccinationModal">
+              <i class="bi bi-plus-circle me-1"></i>Add Vaccination
+            </button>
+          </div>
           <div id="vaccinationsList" class="mt-2"></div>
         </div>
         <div id="prescriptions" class="tab-pane fade p-3">
@@ -171,9 +176,33 @@
           { date: '—', type: 'Chronic conditions', notes: 'None' }
         ],
         vaccinations: [
-          { name: 'COVID-19 (Covishield)', doses: 2, lastDate: '2022-05-20' },
-          { name: 'Tetanus', doses: 1, lastDate: '2023-03-10' },
-          { name: 'Hepatitis B', doses: 1, lastDate: '2021-01-18' }
+          { 
+            name: 'COVID-19 (Covishield)', 
+            doses: 2, 
+            lastDate: '2022-05-20',
+            dateAdministered: '2022-05-20',
+            doseNumber: 2,
+            administeredBy: 'Dr. Sarah Johnson',
+            notes: 'Second dose completed'
+          },
+          { 
+            name: 'Tetanus', 
+            doses: 1, 
+            lastDate: '2023-03-10',
+            dateAdministered: '2023-03-10',
+            doseNumber: 1,
+            administeredBy: 'Dr. Michael Chen',
+            notes: 'Tetanus booster'
+          },
+          { 
+            name: 'Hepatitis B', 
+            doses: 1, 
+            lastDate: '2021-01-18',
+            dateAdministered: '2021-01-18',
+            doseNumber: 1,
+            administeredBy: 'Dr. Priya Sharma',
+            notes: 'Initial vaccination'
+          }
         ],
         prescriptions: [
           { drug: 'Paracetamol', strength: '500mg', frequency: '3/day', duration: '5 days', reason: 'Fever', date: '2025-08-15' },
@@ -239,18 +268,43 @@
         if (!container) return;
         container.innerHTML = '';
         const list = worker.vaccinations || [];
-        if (list.length === 0) { container.innerHTML = '<div class="text-muted">No vaccination records</div>'; return; }
+        if (list.length === 0) { 
+          container.innerHTML = '<div class="text-muted">No vaccination records</div>'; 
+          return; 
+        }
+        // Sort vaccinations by date (most recent first)
+        const sortedList = list.slice().sort((a, b) => {
+          const dateA = new Date(a.dateAdministered || a.lastDate || '1900-01-01');
+          const dateB = new Date(b.dateAdministered || b.lastDate || '1900-01-01');
+          return dateB - dateA;
+        });
+
         const group = document.createElement('div');
         group.className = 'list-group';
-        list.forEach(v => {
+        sortedList.forEach((v, index) => {
+          const originalIndex = list.indexOf(v);
+          const isMostRecent = index === 0;
           const row = document.createElement('div');
-          row.className = 'list-group-item d-flex justify-content-between align-items-start flex-column flex-md-row gap-1';
+          row.className = `list-group-item vaccination-record d-flex justify-content-between align-items-start flex-column flex-md-row gap-2 ${isMostRecent ? 'border-primary' : ''}`;
           row.innerHTML = `
-            <div>
-              <div class="fw-semibold">${v.name}</div>
-              <div class="text-muted small">Doses: ${v.doses||'-'} • Last: ${v.lastDate||'-'}</div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold text-primary-brand">
+                ${v.name}
+                ${isMostRecent ? '<span class="badge bg-primary ms-2" style="font-size: 0.6rem;">Most Recent</span>' : ''}
+              </div>
+              <div class="text-muted small">
+                <span class="vaccination-badge bg-light text-dark">Dose ${v.doseNumber || v.doses || '-'}</span>
+                <span class="vaccination-date ms-2">${v.dateAdministered || v.lastDate || '-'}</span>
+                <span class="vaccination-provider ms-2">By: ${v.administeredBy || '-'}</span>
+              </div>
+              ${v.notes ? `<div class="vaccination-notes small mt-2">${v.notes}</div>` : ''}
             </div>
-            <span class="badge bg-success align-self-md-center">Up to date</span>
+            <div class="d-flex gap-1 align-items-center">
+              <span class="badge bg-success vaccination-badge">Completed</span>
+              <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-vaccination" data-index="${originalIndex}" title="Remove vaccination">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
           `;
           group.appendChild(row);
         });
@@ -422,6 +476,99 @@
         App.saveWorker(worker);
         App.showToast('Notes saved');
       });
+
+      // Ensure vaccinations array exists for the current worker
+      worker.vaccinations = Array.isArray(worker.vaccinations) ? worker.vaccinations : [];
+
+      // Set max date for vaccination date input to today
+      document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.querySelector('input[name="dateAdministered"]');
+        if (dateInput) {
+          const today = new Date().toISOString().split('T')[0];
+          dateInput.setAttribute('max', today);
+        }
+      });
+
+      // Handle vaccination form submission
+      document.getElementById('vaccinationForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = e.target;
+        
+        // Validate form
+        if (!form.checkValidity()) { 
+          form.classList.add('was-validated'); 
+          App.showToast('Please complete required fields', 'error'); 
+          return; 
+        }
+
+        const fd = new FormData(form);
+        const vaccineName = (fd.get('vaccineName') || '').toString().trim();
+        const dateAdministered = (fd.get('dateAdministered') || '').toString();
+        const doseNumber = parseInt((fd.get('doseNumber') || '0').toString(), 10);
+        const administeredBy = (fd.get('administeredBy') || '').toString().trim();
+        const notes = (fd.get('notes') || '').toString().trim();
+
+        // Validate date is not in the future
+        const selectedDate = new Date(dateAdministered);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999); // End of today
+        if (selectedDate > today) {
+          App.showToast('Vaccination date cannot be in the future', 'error');
+          return;
+        }
+
+        // Create vaccination record
+        const vaccinationRecord = {
+          name: vaccineName,
+          dateAdministered: dateAdministered,
+          doseNumber: doseNumber,
+          administeredBy: administeredBy,
+          notes: notes,
+          // Keep backward compatibility
+          doses: doseNumber,
+          lastDate: dateAdministered
+        };
+
+        // Add to worker's vaccination records
+        worker.vaccinations.push(vaccinationRecord);
+        
+        // Save to localStorage
+        App.saveWorker(worker);
+        
+        // Re-render vaccination list
+        renderVaccinations();
+        
+        // Show success message
+        App.showToast('Vaccination record added successfully');
+        
+        // Close modal and reset form
+        const modal = document.getElementById('vaccinationModal');
+        const closeBtn = modal.querySelector('[data-bs-dismiss="modal"]');
+        if (closeBtn) closeBtn.click();
+        form.reset();
+        form.classList.remove('was-validated');
+      });
+
+      // Handle remove vaccination action
+      document.getElementById('vaccinationsList')?.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action="remove-vaccination"]');
+        if (!target) return;
+        
+        const idxStr = target.dataset.index || '-1';
+        const idx = parseInt(idxStr, 10);
+        
+        if (!Number.isNaN(idx) && idx >= 0 && idx < (worker.vaccinations?.length || 0)) {
+          const vaccination = worker.vaccinations[idx];
+          
+          // Confirm deletion
+          if (confirm(`Are you sure you want to remove the ${vaccination.name} vaccination record?`)) {
+            worker.vaccinations.splice(idx, 1);
+            App.saveWorker(worker);
+            renderVaccinations();
+            App.showToast('Vaccination record removed');
+          }
+        }
+      });
     </script>
 
     <!-- Add Record Modal -->
@@ -550,6 +697,69 @@
         form.reset();
       });
     </script>
+
+    <!-- Vaccination Modal -->
+    <div class="modal fade vaccination-modal" id="vaccinationModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header vaccination-header">
+            <h5 class="modal-title">Add Vaccination Record</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="vaccinationForm" class="needs-validation" novalidate>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label">Vaccine Name <span class="text-danger">*</span></label>
+                  <select name="vaccineName" class="form-select" required>
+                    <option value="">Select vaccine</option>
+                    <option value="COVID-19 (Covishield)">COVID-19 (Covishield)</option>
+                    <option value="COVID-19 (Covaxin)">COVID-19 (Covaxin)</option>
+                    <option value="COVID-19 (Sputnik V)">COVID-19 (Sputnik V)</option>
+                    <option value="Tetanus">Tetanus</option>
+                    <option value="Tetanus (TT)">Tetanus (TT)</option>
+                    <option value="Hepatitis B">Hepatitis B</option>
+                    <option value="Polio (OPV)">Polio (OPV)</option>
+                    <option value="Polio (IPV)">Polio (IPV)</option>
+                    <option value="BCG">BCG</option>
+                    <option value="Influenza">Influenza</option>
+                    <option value="MMR">MMR (Measles, Mumps, Rubella)</option>
+                    <option value="Typhoid">Typhoid</option>
+                    <option value="Cholera">Cholera</option>
+                    <option value="Rabies">Rabies</option>
+                    <option value="Other">Other (specify in notes)</option>
+                  </select>
+                  <div class="invalid-feedback">Please select a vaccine</div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">Date Administered <span class="text-danger">*</span></label>
+                  <input name="dateAdministered" type="date" class="form-control" required />
+                  <div class="invalid-feedback">Please select a date</div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label">Dose Number <span class="text-danger">*</span></label>
+                  <input name="doseNumber" type="number" class="form-control" min="1" max="10" placeholder="e.g., 1, 2, booster" required />
+                  <div class="invalid-feedback">Please enter dose number</div>
+                </div>
+                <div class="col-12 col-md-8">
+                  <label class="form-label">Administered By <span class="text-danger">*</span></label>
+                  <input name="administeredBy" type="text" class="form-control" placeholder="Healthcare provider name" required />
+                  <div class="invalid-feedback">Please enter provider name</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Notes (optional)</label>
+                  <textarea name="notes" class="form-control" rows="3" placeholder="Additional details, batch number, side effects, etc."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success">Save Vaccination</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </body>
   </html>
 

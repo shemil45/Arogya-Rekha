@@ -72,3 +72,107 @@ body {
 .vital-signs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .medical-form-section { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; background: #fff; }
 
+/* Vaccination interface styles */
+.vaccination-record {
+  transition: all 0.2s ease;
+  border-left: 3px solid var(--brand-secondary);
+}
+
+.vaccination-record:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+.vaccination-header {
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  color: white;
+  border-radius: 8px 8px 0 0;
+  padding: 12px 16px;
+  margin: -16px -16px 16px -16px;
+}
+
+.vaccination-modal .form-label {
+  font-weight: 600;
+  color: var(--brand-primary);
+  margin-bottom: 6px;
+}
+
+.vaccination-modal .form-control,
+.vaccination-modal .form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.vaccination-modal .form-control:focus,
+.vaccination-modal .form-select:focus {
+  border-color: var(--brand-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.25);
+}
+
+.vaccination-badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.vaccination-date {
+  color: var(--brand-primary);
+  font-weight: 500;
+}
+
+.vaccination-provider {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.vaccination-notes {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 4px;
+  border-left: 3px solid #dee2e6;
+}
+
+/* Mobile responsiveness for vaccination interface */
+@media (max-width: 768px) {
+  .vaccination-modal .modal-dialog {
+    margin: 10px;
+  }
+  
+  .vaccination-record .d-flex {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .vaccination-record .btn-group {
+    align-self: stretch;
+  }
+  
+  .vaccination-record .btn {
+    flex: 1;
+  }
+}
+
+/* Icon styles for vaccination interface */
+.vaccination-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+.vaccination-add-btn {
+  background: linear-gradient(135deg, var(--brand-secondary), #2ecc71);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.vaccination-add-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
